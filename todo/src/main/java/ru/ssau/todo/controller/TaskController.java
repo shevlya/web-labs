@@ -5,11 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.repository.TaskRepository;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,22 +21,23 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> findAll(@RequestParam long userId, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime from, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to){
+    public List<Task> findAll(@RequestParam long userId,
+                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime from,
+                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to){
         return taskRepository.findAll(from, to, userId);
     }
 
     @GetMapping("/{id}")
     public Task findById(@PathVariable long id){
-        return taskRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
-    /*@ResponseStatus(HttpStatus.CREATED)
-    public Task createTask(@RequestBody Task task){
-        return taskRepository.create(task);
-    }*/
-
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        if (task == null || task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         Task created = taskRepository.create(task);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -5,10 +5,7 @@ import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.entity.TaskStatus;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class TaskInMemoryRepository implements TaskRepository{
@@ -35,19 +32,16 @@ public class TaskInMemoryRepository implements TaskRepository{
     public List<Task> findAll(LocalDateTime from, LocalDateTime to, long userId) {
         LocalDateTime start = (from != null) ? from : LocalDateTime.MIN;
         LocalDateTime end = (to != null) ? to : LocalDateTime.MAX;
-        return tasks.values().stream()
-                .filter(task -> task.getCreatedBy() == userId)
-                .filter(task -> !task.getCreatedAt().isBefore(start) && !task.getCreatedAt().isAfter(end))
-                .toList();
-    }
-
-    /*@Override
-    public void update(Task task) throws Exception {
-        if(!tasks.containsKey(task.getId())){
-            throw new Exception();
+        List<Task> result = new ArrayList<>();
+        for (Task task : tasks.values()){
+            if (task.getCreatedBy() == userId){
+                if (task.getCreatedAt() != null && !task.getCreatedAt().isBefore(start) && !task.getCreatedAt().isAfter(end)){
+                    result.add(task);
+                }
+            }
         }
-        tasks.put(task.getId(), task);
-    }*/
+        return result;
+    }
 
     @Override
     public void update(Task task) throws Exception {
@@ -67,9 +61,14 @@ public class TaskInMemoryRepository implements TaskRepository{
 
     @Override
     public long countActiveTasksByUserId(long userId) {
-        return tasks.values().stream()
-                .filter(task -> task.getCreatedBy() == userId)
-                .filter(task -> task.getStatus() == TaskStatus.OPEN || task.getStatus() == TaskStatus.IN_PROGRESS)
-                .count();
+        long countActiveTasks = 0;
+        for (Task task : tasks.values()){
+            if (task.getCreatedBy() == userId){
+                if (task.getStatus() == TaskStatus.OPEN || task.getStatus() == TaskStatus.IN_PROGRESS){
+                    countActiveTasks++;
+                }
+            }
+        }
+        return countActiveTasks;
     }
 }
