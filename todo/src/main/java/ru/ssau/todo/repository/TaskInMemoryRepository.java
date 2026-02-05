@@ -15,24 +15,11 @@ public class TaskInMemoryRepository implements TaskRepository{
     private final Map<Long, Task> tasks = new HashMap<>();
     private long currentTaskId = 1;
 
-    /*
-    @Override
-    public Task create(Task task){
-        if (task == null){
-            throw new IllegalArgumentException ();
-        }
-        task.setId(currentTaskId++);
-        task.setCreatedAt(LocalDateTime.now());
-        tasks.put(task.getId(), task);
-        return task;
-    }*/
-
     @Override
     public Task create(Task task) {
         if (task == null || task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
             throw new IllegalArgumentException();
         }
-
         task.setId(currentTaskId++);
         task.setCreatedAt(LocalDateTime.now());
         tasks.put(task.getId(), task);

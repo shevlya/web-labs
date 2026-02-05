@@ -37,31 +37,17 @@ public class TaskController {
     public Task createTask(@RequestBody Task task){
         return taskRepository.create(task);
     }*/
-    /*
+
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         Task created = taskRepository.create(task);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .header("Location", "/tasks/" + created.getId())
                 .body(created);
-    }*/
-
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        try {
-            Task created = taskRepository.create(task);
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(created.getId())
-                    .toUri();
-            return ResponseEntity.created(location).body(created);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
     }
 
     @PutMapping("/{id}")
-    public void updateTask(@PathVariable long id, @RequestBody Task task) throws Exception{
+    public void updateTask(@PathVariable long id, @RequestBody Task task){
         task.setId(id);
         try{
             taskRepository.update(task);
