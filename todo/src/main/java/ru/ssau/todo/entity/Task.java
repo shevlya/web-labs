@@ -3,6 +3,15 @@ package ru.ssau.todo.entity;
 import java.time.LocalDateTime;
 
 public class Task {
+    private long id;
+    private String title;
+    private TaskStatus status;
+    private long createdBy;
+    private LocalDateTime createdAt;
+
+    public Task() {
+    }
+
     public long getId() {
         return id;
     }
@@ -10,8 +19,6 @@ public class Task {
     public void setId(long id) {
         this.id = id;
     }
-
-    private long id;
 
     public String getTitle() {
         return title;
@@ -21,8 +28,6 @@ public class Task {
         this.title = title;
     }
 
-    private String title;
-
     public TaskStatus getStatus() {
         return status;
     }
@@ -30,8 +35,6 @@ public class Task {
     public void setStatus(TaskStatus status) {
         this.status = status;
     }
-
-    private TaskStatus status;
 
     public long getCreatedBy() {
         return createdBy;
@@ -41,8 +44,6 @@ public class Task {
         this.createdBy = createdBy;
     }
 
-    private long createdBy;
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -51,8 +52,4 @@ public class Task {
         this.createdAt = createdAt;
     }
 
-    private LocalDateTime createdAt;
-
-    public Task() {
-    }
 }
