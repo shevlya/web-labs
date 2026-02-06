@@ -22,13 +22,13 @@ public class TaskController {
 
     @GetMapping
     public List<Task> findAll(@RequestParam long userId,
-                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime from,
-                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to){
+                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
         return taskRepository.findAll(from, to, userId);
     }
 
     @GetMapping("/{id}")
-    public Task findById(@PathVariable long id){
+    public Task findById(@PathVariable long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
@@ -46,23 +46,23 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public void updateTask(@PathVariable long id, @RequestBody Task task){
+    public void updateTask(@PathVariable long id, @RequestBody Task task) {
         task.setId(id);
-        try{
+        try {
             taskRepository.update(task);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTask(@PathVariable long id){
-       taskRepository.deleteById(id);
+    public void deleteTask(@PathVariable long id) {
+        taskRepository.deleteById(id);
     }
 
     @GetMapping("/active/count")
-    public long countActive(@RequestParam long userId){
+    public long countActive(@RequestParam long userId) {
         return taskRepository.countActiveTasksByUserId(userId);
     }
 }

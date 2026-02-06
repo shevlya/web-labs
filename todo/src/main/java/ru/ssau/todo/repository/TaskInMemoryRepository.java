@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
-public class TaskInMemoryRepository implements TaskRepository{
+public class TaskInMemoryRepository implements TaskRepository {
     private final Map<Long, Task> tasks = new HashMap<>();
     private long currentTaskId = 1;
 
@@ -33,9 +33,9 @@ public class TaskInMemoryRepository implements TaskRepository{
         LocalDateTime start = (from != null) ? from : LocalDateTime.MIN;
         LocalDateTime end = (to != null) ? to : LocalDateTime.MAX;
         List<Task> result = new ArrayList<>();
-        for (Task task : tasks.values()){
-            if (task.getCreatedBy() == userId){
-                if (task.getCreatedAt() != null && !task.getCreatedAt().isBefore(start) && !task.getCreatedAt().isAfter(end)){
+        for (Task task : tasks.values()) {
+            if (task.getCreatedBy() == userId) {
+                if (task.getCreatedAt() != null && !task.getCreatedAt().isBefore(start) && !task.getCreatedAt().isAfter(end)) {
                     result.add(task);
                 }
             }
@@ -62,9 +62,9 @@ public class TaskInMemoryRepository implements TaskRepository{
     @Override
     public long countActiveTasksByUserId(long userId) {
         long countActiveTasks = 0;
-        for (Task task : tasks.values()){
-            if (task.getCreatedBy() == userId){
-                if (task.getStatus() == TaskStatus.OPEN || task.getStatus() == TaskStatus.IN_PROGRESS){
+        for (Task task : tasks.values()) {
+            if (task.getCreatedBy() == userId) {
+                if (task.getStatus() == TaskStatus.OPEN || task.getStatus() == TaskStatus.IN_PROGRESS) {
                     countActiveTasks++;
                 }
             }
