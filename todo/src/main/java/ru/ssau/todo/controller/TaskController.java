@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.ssau.todo.entity.Task;
+import ru.ssau.todo.repository.TaskNotFoundException;
 import ru.ssau.todo.repository.TaskRepository;
 
 import java.time.LocalDateTime;
@@ -47,10 +48,13 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public void updateTask(@PathVariable long id, @RequestBody Task task) {
+        if (task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         task.setId(id);
         try {
             taskRepository.update(task);
-        } catch (Exception e) {
+        } catch (TaskNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }

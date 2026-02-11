@@ -44,10 +44,13 @@ public class TaskInMemoryRepository implements TaskRepository {
     }
 
     @Override
-    public void update(Task task) throws Exception {
+    public void update(Task task) {
         Task existingTask = tasks.get(task.getId());
         if (existingTask == null) {
-            throw new Exception();
+            throw new TaskNotFoundException(task.getId());
+        }
+        if (task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
+            throw new IllegalArgumentException();
         }
         task.setCreatedAt(existingTask.getCreatedAt());
         task.setCreatedBy(existingTask.getCreatedBy());

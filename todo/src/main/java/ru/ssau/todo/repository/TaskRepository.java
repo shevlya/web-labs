@@ -48,7 +48,7 @@ public interface TaskRepository {
      * @param task объект задачи с обновленными данными.
      * @throws Exception (специализированное исключение) если задача с таким ID не существует.
      */
-    void update(Task task) throws Exception;
+    void update(Task task);
 
     /**
      * Удаляет задачу из хранилища по её идентификатору.

@@ -108,3 +108,13 @@ Content-Type: application/json
   "status": "OPEN",
   "createdBy": 2
 }
+
+### 17 Обновление с пустым названием задачи (400 Bad Request)
+
+PUT http://localhost:8080/tasks/2
+Content-Type: application/json
+
+{
+  "title": "",
+  "status": "DONE"
+}
