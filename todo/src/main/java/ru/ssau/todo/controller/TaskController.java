@@ -62,7 +62,7 @@ public class TaskController {
             taskService.updateTask(task);
         } catch (TaskNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        } catch (TooManyActiveTasksException e){
+        } catch (TooManyActiveTasksException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
