@@ -30,11 +30,7 @@ public class TaskJdbcRepository implements TaskRepository {
         task.setTitle(rs.getString("title"));
         task.setStatus(TaskStatus.valueOf(rs.getString("status")));
         task.setCreatedBy(rs.getLong("created_by"));
-
-        Timestamp timestamp = rs.getTimestamp("created_at");
-        if (timestamp != null) {
-            task.setCreatedAt(timestamp.toLocalDateTime());
-        }
+        task.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         return task;
     };
 

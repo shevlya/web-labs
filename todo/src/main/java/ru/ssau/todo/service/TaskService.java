@@ -54,7 +54,6 @@ public class TaskService {
     public void deleteTask(long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
-
         if (task.getCreatedAt() != null) {
             long minutesSinceCreation = Duration.between(task.getCreatedAt(), LocalDateTime.now()).toMinutes();
             if (minutesSinceCreation < 5) {

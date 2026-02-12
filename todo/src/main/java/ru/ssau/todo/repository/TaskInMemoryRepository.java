@@ -58,7 +58,7 @@ public class TaskInMemoryRepository implements TaskRepository {
 
     @Override
     public void deleteById(long id) {
-        if (!tasks.containsKey(id)){
+        if (!tasks.containsKey(id)) {
             throw new TaskNotFoundException(id);
         }
         tasks.remove(id);
