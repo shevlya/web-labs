@@ -51,9 +51,6 @@ public class TaskInMemoryRepository implements TaskRepository {
         if (existingTask == null) {
             throw new TaskNotFoundException(task.getId());
         }
-        if (task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
-            throw new IllegalArgumentException();
-        }
         task.setCreatedAt(existingTask.getCreatedAt());
         task.setCreatedBy(existingTask.getCreatedBy());
         tasks.put(task.getId(), task);
@@ -61,6 +58,9 @@ public class TaskInMemoryRepository implements TaskRepository {
 
     @Override
     public void deleteById(long id) {
+        if (!tasks.containsKey(id)){
+            throw new TaskNotFoundException(id);
+        }
         tasks.remove(id);
     }
 

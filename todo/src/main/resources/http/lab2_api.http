@@ -19,10 +19,10 @@ Content-Type: application/json
 }
 
 
-### 2.1 Проверка ограничения на удаление задачи созданной менее 5 минут назад (400 Bad Request)
+### 3. Проверка ограничения на удаление задачи созданной менее 5 минут назад (400 Bad Request)
 DELETE http://localhost:8080/tasks/1
 
-### 3. Создание задачи со статусом DONE (201 Created)
+### 4. Создание задачи со статусом DONE (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
@@ -31,9 +31,6 @@ Content-Type: application/json
   "status": "DONE",
   "createdBy": 1
 }
-
-### 4. Получить все задачи пользователя без фильтра по дате (200 ОК)
-GET http://localhost:8080/tasks?userId=1
 
 ### 5. Получить все задачи пользователя с фильтром по дате (200 ОК)
 GET http://localhost:8080/tasks?userId=1&from=2026-01-01T00:00:00&to=2026-12-31T23:59:59
@@ -133,7 +130,7 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 9.89 Проверка ограничения 10 активных задач, создаём задачи
+### 9.9 Проверка ограничения 10 активных задач, создаём задачи
 POST http://localhost:8080/tasks
 Content-Type: application/json
 

@@ -31,7 +31,7 @@ public class TaskService {
         long activeCount = taskRepository.countActiveTasksByUserId(task.getCreatedBy());
         if (task.getStatus() == TaskStatus.OPEN || task.getStatus() == TaskStatus.IN_PROGRESS) {
             if (activeCount >= 10) {
-                throw new IllegalStateException("Пользователь не может иметь более 10 активных задач " + task.getCreatedBy());
+                throw new TooManyActiveTasksException(task.getCreatedBy());
             }
         }
         return taskRepository.create(task);
@@ -45,7 +45,7 @@ public class TaskService {
         if ((task.getStatus() == TaskStatus.OPEN || task.getStatus() == TaskStatus.IN_PROGRESS) && !(existing.getStatus() == TaskStatus.OPEN || existing.getStatus() == TaskStatus.IN_PROGRESS)) {
             long activeCount = taskRepository.countActiveTasksByUserId(existing.getCreatedBy());
             if (activeCount >= 10) {
-                throw new IllegalStateException("Пользователь не может иметь более 10 активных задач");
+                throw new TooManyActiveTasksException(existing.getCreatedBy());
             }
         }
         taskRepository.update(task);
@@ -58,7 +58,7 @@ public class TaskService {
         if (task.getCreatedAt() != null) {
             long minutesSinceCreation = Duration.between(task.getCreatedAt(), LocalDateTime.now()).toMinutes();
             if (minutesSinceCreation < 5) {
-                throw new IllegalStateException("Нельзя удалить задачу созданную менее 5 минут назад");
+                throw new TaskDeletionNotAllowedException();
             }
         }
         taskRepository.deleteById(id);

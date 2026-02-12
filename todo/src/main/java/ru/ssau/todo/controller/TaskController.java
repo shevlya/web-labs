@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.repository.TaskNotFoundException;
+import ru.ssau.todo.service.TaskDeletionNotAllowedException;
 import ru.ssau.todo.service.TaskService;
+import ru.ssau.todo.service.TooManyActiveTasksException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,7 +47,7 @@ public class TaskController {
                     .status(HttpStatus.CREATED)
                     .header("Location", "/tasks/" + created.getId())
                     .body(created);
-        } catch (IllegalStateException e) {
+        } catch (TooManyActiveTasksException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -60,6 +62,8 @@ public class TaskController {
             taskService.updateTask(task);
         } catch (TaskNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (TooManyActiveTasksException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -68,7 +72,7 @@ public class TaskController {
     public void deleteTask(@PathVariable long id) {
         try {
             taskService.deleteTask(id);
-        } catch (IllegalStateException e) {
+        } catch (TaskDeletionNotAllowedException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (TaskNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
