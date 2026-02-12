@@ -1,0 +1,154 @@
+### 1. Создание задачи со статусом OPEN (201 Created)
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Прочитать 30 страниц книги",
+  "status": "OPEN",
+  "createdBy": 1
+}
+
+### 2. Создание задачи со статусом IN_PROGRESS (201 Created)
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Убрать комнату",
+  "status": "IN_PROGRESS",
+  "createdBy": 1
+}
+
+
+### 2.1 Проверка ограничения на удаление задачи созданной менее 5 минут назад (400 Bad Request)
+DELETE http://localhost:8080/tasks/1
+
+### 3. Создание задачи со статусом DONE (201 Created)
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Прочитать методичку по Java",
+  "status": "DONE",
+  "createdBy": 1
+}
+
+### 4. Получить все задачи пользователя без фильтра по дате (200 ОК)
+GET http://localhost:8080/tasks?userId=1
+
+### 5. Получить все задачи пользователя с фильтром по дате (200 ОК)
+GET http://localhost:8080/tasks?userId=1&from=2026-01-01T00:00:00&to=2026-12-31T23:59:59
+
+### 6. Получить задачу по ID (200 ОК)
+GET http://localhost:8080/tasks/1
+
+### 7. Обновление задачи 1 (200 OK)
+PUT http://localhost:8080/tasks/1
+Content-Type: application/json
+
+{
+  "title": "Прочитать 30 страниц книги",
+  "status": "DONE"
+}
+
+### 8. Подсчёт активных задач пользователя
+GET http://localhost:8080/tasks/active/count?userId=1
+
+### 9.1 Проверка ограничения 10 активных задач, создаём задачи
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Сходить в магазин",
+  "status": "OPEN",
+  "createdBy": 1
+}
+
+### 9.2 Проверка ограничения 10 активных задач, создаём задачи
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Спроектировать логическую модель БД",
+  "status": "OPEN",
+  "createdBy": 1
+}
+
+### 9.3 Проверка ограничения 10 активных задач, создаём задачи
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Нормализировать полученные данные",
+  "status": "IN_PROGRESS",
+  "createdBy": 1
+}
+
+### 9.4 Проверка ограничения 10 активных задач, создаём задачи
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Отправить Mind-Map",
+  "status": "IN_PROGRESS",
+  "createdBy": 1
+}
+
+### 9.5 Проверка ограничения 10 активных задач, создаём задачи
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Treffen mit meinen Freunden",
+  "status": "IN_PROGRESS",
+  "createdBy": 1
+}
+
+### 9.6 Проверка ограничения 10 активных задач, создаём задачи
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Film ansehen",
+  "status": "OPEN",
+  "createdBy": 1
+}
+
+### 9.7 Проверка ограничения 10 активных задач, создаём задачи
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Забрать посылку",
+  "status": "OPEN",
+  "createdBy": 1
+}
+
+### 9.8 Проверка ограничения 10 активных задач, создаём задачи
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Купить книгу",
+  "status": "OPEN",
+  "createdBy": 1
+}
+
+### 9.89 Проверка ограничения 10 активных задач, создаём задачи
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Отредактировать аналитическую записку",
+  "status": "IN_PROGRESS",
+  "createdBy": 1
+}
+
+### 10. Попытка создать 11-ю активную задачу (400 Bad Request)
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Заполнить календарь",
+  "status": "OPEN",
+  "createdBy": 1
+}

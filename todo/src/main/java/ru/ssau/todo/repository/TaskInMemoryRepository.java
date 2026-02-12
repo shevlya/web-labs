@@ -1,5 +1,6 @@
 package ru.ssau.todo.repository;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.entity.TaskStatus;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
+@Profile("in-memory")
 public class TaskInMemoryRepository implements TaskRepository {
     private final Map<Long, Task> tasks = new HashMap<>();
     private long currentTaskId = 1;

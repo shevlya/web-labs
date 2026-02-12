@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.repository.TaskNotFoundException;
-import ru.ssau.todo.repository.TaskRepository;
+import ru.ssau.todo.service.TaskService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,22 +15,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
-    private final TaskRepository taskRepository;
+    private final TaskService taskService;
 
-    public TaskController(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @GetMapping
     public List<Task> findAll(@RequestParam long userId,
                               @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
                               @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-        return taskRepository.findAll(from, to, userId);
+        return taskService.findAll(from, to, userId);
     }
 
     @GetMapping("/{id}")
     public Task findById(@PathVariable long id) {
-        return taskRepository.findById(id)
+        return taskService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
@@ -39,11 +39,15 @@ public class TaskController {
         if (task == null || task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        Task created = taskRepository.create(task);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .header("Location", "/tasks/" + created.getId())
-                .body(created);
+        try {
+            Task created = taskService.createTask(task);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .header("Location", "/tasks/" + created.getId())
+                    .body(created);
+        } catch (IllegalStateException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
@@ -53,7 +57,7 @@ public class TaskController {
         }
         task.setId(id);
         try {
-            taskRepository.update(task);
+            taskService.updateTask(task);
         } catch (TaskNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -62,11 +66,17 @@ public class TaskController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(@PathVariable long id) {
-        taskRepository.deleteById(id);
+        try {
+            taskService.deleteTask(id);
+        } catch (IllegalStateException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (TaskNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/active/count")
     public long countActive(@RequestParam long userId) {
-        return taskRepository.countActiveTasksByUserId(userId);
+        return taskService.countActive(userId);
     }
 }
