@@ -19,8 +19,11 @@ Content-Type: application/json
 }
 
 
-### 3. Проверка ограничения на удаление задачи созданной менее 5 минут назад (400 Bad Request)
+### 3. Проверка ограничения на удаление задачи созданной менее 5 минут назад
 DELETE http://localhost:8080/tasks/1
+
+### 3.1 Проверка ограничения на удаление задачи созданной менее 5 минут назад (400 Bad Request)
+DELETE http://localhost:8080/tasks/2
 
 ### 4. Создание задачи со статусом DONE (201 Created)
 POST http://localhost:8080/tasks

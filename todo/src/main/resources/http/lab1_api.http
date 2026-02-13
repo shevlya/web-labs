@@ -3,7 +3,7 @@ POST http://localhost:8080/tasks
 Content-Type: application/json
 
 {
-  "title": "Прочитать 30 страниц книги",
+  "title": "Прочитать 20 страниц книги",
   "status": "OPEN",
   "createdBy": 1
 }
