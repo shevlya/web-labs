@@ -1,10 +1,15 @@
 package ru.ssau.todo.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 public class Task {
     private long id;
+    @NotBlank(message = "Заголовок не может быть пустым")
     private String title;
+    @NotNull(message = "Статус не может быть пустым")
     private TaskStatus status;
     private long createdBy;
     private LocalDateTime createdAt;
@@ -51,5 +56,4 @@ public class Task {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
 }

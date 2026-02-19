@@ -9,11 +9,13 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.entity.TaskStatus;
+import ru.ssau.todo.exception.TaskNotFoundException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 @Profile("jdbc")
@@ -30,16 +32,13 @@ public class TaskJdbcRepository implements TaskRepository {
         task.setTitle(rs.getString("title"));
         task.setStatus(TaskStatus.valueOf(rs.getString("status")));
         task.setCreatedBy(rs.getLong("created_by"));
-        task.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        Timestamp ts = rs.getTimestamp("created_at");
+        task.setCreatedAt(ts != null ? ts.toLocalDateTime() : null);
         return task;
     };
 
     @Override
     public Task create(Task task) {
-        if (task == null || task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
-            throw new IllegalArgumentException();
-        }
-        task.setCreatedAt(LocalDateTime.now());
         String sql = "INSERT INTO task (title, status, created_by, created_at) VALUES (:title, :status, :createdBy, :createdAt)";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("title", task.getTitle())
@@ -65,18 +64,16 @@ public class TaskJdbcRepository implements TaskRepository {
 
     @Override
     public List<Task> findAll(LocalDateTime from, LocalDateTime to, long userId) {
-        LocalDateTime start = (from != null) ? from : LocalDateTime.MIN;
-        LocalDateTime end = (to != null) ? to : LocalDateTime.MAX;
         String sql = "SELECT * FROM task WHERE created_by = :userId AND created_at BETWEEN :from AND :to";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("userId", userId)
-                .addValue("from", Timestamp.valueOf(start))
-                .addValue("to", Timestamp.valueOf(end));
+                .addValue("from", Timestamp.valueOf(from))
+                .addValue("to", Timestamp.valueOf(to));
         return namedJdbcTemplate.query(sql, params, taskRowMapper);
     }
 
     @Override
-    public void update(Task task) {
+    public void update(Task task) throws TaskNotFoundException {
         String sql = "UPDATE task SET title = :title, status = :status WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("title", task.getTitle())
@@ -89,7 +86,7 @@ public class TaskJdbcRepository implements TaskRepository {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(long id) throws TaskNotFoundException {
         String sql = "DELETE FROM task WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
         int rows = namedJdbcTemplate.update(sql, params);
@@ -100,8 +97,11 @@ public class TaskJdbcRepository implements TaskRepository {
 
     @Override
     public long countActiveTasksByUserId(long userId) {
-        String sql = "SELECT COUNT(*) FROM task WHERE created_by = :userId AND status IN ('OPEN', 'IN_PROGRESS')";
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("userId", userId);
+        Set<String> activeStatuses = TaskStatus.getActiveStatusNames();
+        String sql = "SELECT COUNT(*) FROM task WHERE created_by = :userId AND status IN (:statuses)";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId)
+                .addValue("statuses", activeStatuses);
         Long count = namedJdbcTemplate.queryForObject(sql, params, Long.class);
         return count != null ? count : 0;
     }

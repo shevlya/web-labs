@@ -3,7 +3,7 @@ package ru.ssau.todo.repository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import ru.ssau.todo.entity.Task;
-import ru.ssau.todo.entity.TaskStatus;
+import ru.ssau.todo.exception.TaskNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -16,11 +16,7 @@ public class TaskInMemoryRepository implements TaskRepository {
 
     @Override
     public Task create(Task task) {
-        if (task == null || task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
-            throw new IllegalArgumentException();
-        }
         task.setId(currentTaskId++);
-        task.setCreatedAt(LocalDateTime.now());
         tasks.put(task.getId(), task);
         return task;
     }
@@ -32,12 +28,10 @@ public class TaskInMemoryRepository implements TaskRepository {
 
     @Override
     public List<Task> findAll(LocalDateTime from, LocalDateTime to, long userId) {
-        LocalDateTime start = (from != null) ? from : LocalDateTime.MIN;
-        LocalDateTime end = (to != null) ? to : LocalDateTime.MAX;
         List<Task> result = new ArrayList<>();
         for (Task task : tasks.values()) {
             if (task.getCreatedBy() == userId) {
-                if (task.getCreatedAt() != null && !task.getCreatedAt().isBefore(start) && !task.getCreatedAt().isAfter(end)) {
+                if (task.getCreatedAt() != null && !task.getCreatedAt().isBefore(from) && !task.getCreatedAt().isAfter(to)) {
                     result.add(task);
                 }
             }
@@ -46,7 +40,7 @@ public class TaskInMemoryRepository implements TaskRepository {
     }
 
     @Override
-    public void update(Task task) {
+    /*public void update(Task task) throws TaskNotFoundException {
         Task existingTask = tasks.get(task.getId());
         if (existingTask == null) {
             throw new TaskNotFoundException(task.getId());
@@ -54,10 +48,17 @@ public class TaskInMemoryRepository implements TaskRepository {
         task.setCreatedAt(existingTask.getCreatedAt());
         task.setCreatedBy(existingTask.getCreatedBy());
         tasks.put(task.getId(), task);
+    }*/
+
+    public void update(Task task) throws TaskNotFoundException {
+        if (!tasks.containsKey(task.getId())) {
+            throw new TaskNotFoundException(task.getId());
+        }
+        tasks.put(task.getId(), task);
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(long id) throws TaskNotFoundException {
         if (!tasks.containsKey(id)) {
             throw new TaskNotFoundException(id);
         }
@@ -69,7 +70,7 @@ public class TaskInMemoryRepository implements TaskRepository {
         long countActiveTasks = 0;
         for (Task task : tasks.values()) {
             if (task.getCreatedBy() == userId) {
-                if (task.getStatus() == TaskStatus.OPEN || task.getStatus() == TaskStatus.IN_PROGRESS) {
+                if (task.getStatus().isActive()) {
                     countActiveTasks++;
                 }
             }

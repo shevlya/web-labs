@@ -1,12 +1,13 @@
 ## Добро пожаловать
 
-<img src="bild-fuer-readme.jpg" alt="Bild für README" width="400"/>
-
-<img src="kermit-falling.gif" alt="Kermit falling" width="400"/>
+<div style="display: flex; gap: 10px;">
+  <img src="bild-fuer-readme.jpg" alt="Bild für README" width="400"/>
+  <img src="kermit-falling.gif" alt="Kermit falling" width="400"/>
+</div>
 
 ## Задания к лабораторным работам
 1. [Spring Web](./Лабораторная%20работа%201.md) — ✅ сдана
-2. [JDBC](./Лабораторная%20работа%202.md) — 🔄 в процессе
+2. [JDBC](./Лабораторная%20работа%202.md) — 🔄 в процессе (ich hab' so viel geweint)
 3. [JPA](./Лабораторная%20работа%203.md) — 🔄 в процессе
 4. [Security](./Лабораторная%20работа%204.md) — 🔄 в процессе
 5. [Клиентская часть](./Лабораторная%20работа%205.md) — 🔄 в процессе

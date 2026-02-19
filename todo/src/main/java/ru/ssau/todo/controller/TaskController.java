@@ -1,15 +1,14 @@
 package ru.ssau.todo.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.ssau.todo.entity.Task;
-import ru.ssau.todo.repository.TaskNotFoundException;
-import ru.ssau.todo.service.TaskDeletionNotAllowedException;
+import ru.ssau.todo.exception.TaskDeletionNotAllowedException;
+import ru.ssau.todo.exception.TaskNotFoundException;
+import ru.ssau.todo.exception.TooManyActiveTasksException;
 import ru.ssau.todo.service.TaskService;
-import ru.ssau.todo.service.TooManyActiveTasksException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,52 +30,25 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public Task findById(@PathVariable long id) {
-        return taskService.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public Task findById(@PathVariable long id) throws TaskNotFoundException {
+        return taskService.getByIdOrThrow(id);
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        if (task == null || task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        try {
-            Task created = taskService.createTask(task);
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .header("Location", "/tasks/" + created.getId())
-                    .body(created);
-        } catch (TooManyActiveTasksException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public Task createTask(@RequestBody @Valid Task task) throws TooManyActiveTasksException {
+        return taskService.createTask(task);
     }
 
     @PutMapping("/{id}")
-    public void updateTask(@PathVariable long id, @RequestBody Task task) {
-        if (task.getTitle() == null || task.getTitle().isBlank() || task.getStatus() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        task.setId(id);
-        try {
-            taskService.updateTask(task);
-        } catch (TaskNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        } catch (TooManyActiveTasksException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public Task updateTask(@PathVariable long id, @RequestBody @Valid Task task) throws TaskNotFoundException, TooManyActiveTasksException {
+        return taskService.update(id, task);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTask(@PathVariable long id) {
-        try {
-            taskService.deleteTask(id);
-        } catch (TaskDeletionNotAllowedException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (TaskNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public void deleteTask(@PathVariable long id) throws TaskNotFoundException, TaskDeletionNotAllowedException {
+        taskService.deleteTask(id);
     }
 
     @GetMapping("/active/count")

@@ -1,6 +1,7 @@
 package ru.ssau.todo.repository;
 
 import ru.ssau.todo.entity.Task;
+import ru.ssau.todo.exception.TaskNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,14 +49,14 @@ public interface TaskRepository {
      * @param task объект задачи с обновленными данными.
      * @throws Exception (специализированное исключение) если задача с таким ID не существует.
      */
-    void update(Task task);
+    void update(Task task) throws TaskNotFoundException;
 
     /**
      * Удаляет задачу из хранилища по её идентификатору.
      *
      * @param id идентификатор задачи, которую необходимо удалить.
      */
-    void deleteById(long id);
+    void deleteById(long id) throws TaskNotFoundException;
 
     /**
      * Подсчитывает количество "активных" задач для конкретного пользователя.
