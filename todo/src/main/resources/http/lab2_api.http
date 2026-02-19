@@ -19,10 +19,10 @@ Content-Type: application/json
 }
 
 
-### 3. Проверка ограничения на удаление задачи созданной менее 5 минут назад
+### 3.1 Проверка ограничения на удаление задачи созданной менее 5 минут назад (204 No Content)
 DELETE http://localhost:8080/tasks/1
 
-### 3.1 Проверка ограничения на удаление задачи созданной менее 5 минут назад (400 Bad Request)
+### 3.2 Проверка ограничения на удаление задачи созданной менее 5 минут назад (400 Bad Request)
 DELETE http://localhost:8080/tasks/2
 
 ### 4. Создание задачи со статусом DONE (201 Created)
@@ -35,8 +35,11 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 5. Получить все задачи пользователя с фильтром по дате (200 ОК)
+### 5.1 Получить все задачи пользователя с фильтром по дате (200 ОК)
 GET http://localhost:8080/tasks?userId=1&from=2026-01-01T00:00:00&to=2026-12-31T23:59:59
+
+### 5.2 Получение списка задач без указания дат (значения по-умолчанию)
+GET http://localhost:8080/tasks?userId=1
 
 ### 6. Получить задачу по ID (200 ОК)
 GET http://localhost:8080/tasks/1
@@ -50,10 +53,10 @@ Content-Type: application/json
   "status": "DONE"
 }
 
-### 8. Подсчёт активных задач пользователя
+### 8. Подсчёт активных задач пользователя (200 OK)
 GET http://localhost:8080/tasks/active/count?userId=1
 
-### 9.1 Проверка ограничения 10 активных задач, создаём задачи
+### 9.1 Проверка ограничения 10 активных задач, создаём задачи (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
@@ -63,7 +66,7 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 9.2 Проверка ограничения 10 активных задач, создаём задачи
+### 9.2 Проверка ограничения 10 активных задач, создаём задачи (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
@@ -73,7 +76,7 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 9.3 Проверка ограничения 10 активных задач, создаём задачи
+### 9.3 Проверка ограничения 10 активных задач, создаём задачи (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
@@ -83,7 +86,7 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 9.4 Проверка ограничения 10 активных задач, создаём задачи
+### 9.4 Проверка ограничения 10 активных задач, создаём задачи (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
@@ -93,7 +96,7 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 9.5 Проверка ограничения 10 активных задач, создаём задачи
+### 9.5 Проверка ограничения 10 активных задач, создаём задачи (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
@@ -103,7 +106,7 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 9.6 Проверка ограничения 10 активных задач, создаём задачи
+### 9.6 Проверка ограничения 10 активных задач, создаём задачи (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
@@ -113,7 +116,7 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 9.7 Проверка ограничения 10 активных задач, создаём задачи
+### 9.7 Проверка ограничения 10 активных задач, создаём задачи (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
@@ -123,7 +126,7 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 9.8 Проверка ограничения 10 активных задач, создаём задачи
+### 9.8 Проверка ограничения 10 активных задач, создаём задачи (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
@@ -133,7 +136,7 @@ Content-Type: application/json
   "createdBy": 1
 }
 
-### 9.9 Проверка ограничения 10 активных задач, создаём задачи
+### 9.9 Проверка ограничения 10 активных задач, создаём задачи (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 

@@ -64,11 +64,14 @@ public class TaskJdbcRepository implements TaskRepository {
 
     @Override
     public List<Task> findAll(LocalDateTime from, LocalDateTime to, long userId) {
-        String sql = "SELECT * FROM task WHERE created_by = :userId AND created_at BETWEEN :from AND :to";
+        //String sql = "SELECT * FROM task WHERE created_by = :userId AND created_at BETWEEN :from AND :to";
+        String sql = "SELECT * FROM task WHERE created_by = :userId " +
+                "AND created_at BETWEEN COALESCE(:from, '-infinity'::timestamp) AND COALESCE(:to, 'infinity'::timestamp) " +
+                "ORDER BY created_at DESC";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("userId", userId)
-                .addValue("from", Timestamp.valueOf(from))
-                .addValue("to", Timestamp.valueOf(to));
+                .addValue("from", from != null ? Timestamp.valueOf(from) : null)
+                .addValue("to", to != null ? Timestamp.valueOf(to) : null);
         return namedJdbcTemplate.query(sql, params, taskRowMapper);
     }
 

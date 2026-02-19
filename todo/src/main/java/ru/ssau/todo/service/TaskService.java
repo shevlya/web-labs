@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class TaskService {
     private static final int MAX_ACTIVE_TASKS = 10;
-    private static final int MIN_DELETE_MINUTES = 5;
+    private static final int MIN_DELETE_MINUTES = 1;
 
     private final TaskRepository taskRepository;
 
@@ -24,9 +24,7 @@ public class TaskService {
     }
 
     public List<Task> findAll(LocalDateTime from, LocalDateTime to, long userId) {
-        LocalDateTime start = (from != null) ? from : LocalDateTime.MIN;
-        LocalDateTime end = (to != null) ? to : LocalDateTime.MAX;
-        return taskRepository.findAll(start, end, userId);
+        return taskRepository.findAll(from, to, userId);
     }
 
     public Task createTask(Task task) throws TooManyActiveTasksException {
@@ -35,21 +33,21 @@ public class TaskService {
         return taskRepository.create(task);
     }
 
-    public Task update(long id, Task updated) throws TaskNotFoundException, TooManyActiveTasksException {
+    public Task update(long id, Task updatedTask) throws TaskNotFoundException, TooManyActiveTasksException {
         Task existing = getByIdOrThrow(id);
-        updated.setId(id);
-        updated.setCreatedBy(existing.getCreatedBy());
-        updated.setCreatedAt(existing.getCreatedAt());
-        validateActiveLimitOnUpdate(existing, updated);
-        taskRepository.update(updated);
-        return updated;
+        updatedTask.setId(id);
+        updatedTask.setCreatedBy(existing.getCreatedBy());
+        updatedTask.setCreatedAt(existing.getCreatedAt());
+        validateActiveLimitOnUpdate(existing, updatedTask);
+        taskRepository.update(updatedTask);
+        return updatedTask;
     }
 
     public void deleteTask(long id) throws TaskNotFoundException, TaskDeletionNotAllowedException {
         Task task = getByIdOrThrow(id);
         long minutesSinceCreation = Duration.between(task.getCreatedAt(), LocalDateTime.now()).toMinutes();
         if (minutesSinceCreation < MIN_DELETE_MINUTES) {
-            throw new TaskDeletionNotAllowedException();
+            throw new TaskDeletionNotAllowedException(MIN_DELETE_MINUTES);
         }
         taskRepository.deleteById(id);
     }

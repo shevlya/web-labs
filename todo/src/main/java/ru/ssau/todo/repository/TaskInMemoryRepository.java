@@ -28,10 +28,12 @@ public class TaskInMemoryRepository implements TaskRepository {
 
     @Override
     public List<Task> findAll(LocalDateTime from, LocalDateTime to, long userId) {
+        LocalDateTime start = (from != null) ? from : LocalDateTime.MIN;
+        LocalDateTime end = (to != null) ? to : LocalDateTime.MAX;
         List<Task> result = new ArrayList<>();
         for (Task task : tasks.values()) {
             if (task.getCreatedBy() == userId) {
-                if (task.getCreatedAt() != null && !task.getCreatedAt().isBefore(from) && !task.getCreatedAt().isAfter(to)) {
+                if (task.getCreatedAt() != null && !task.getCreatedAt().isBefore(start) && !task.getCreatedAt().isAfter(end)) {
                     result.add(task);
                 }
             }
@@ -40,28 +42,16 @@ public class TaskInMemoryRepository implements TaskRepository {
     }
 
     @Override
-    /*public void update(Task task) throws TaskNotFoundException {
-        Task existingTask = tasks.get(task.getId());
-        if (existingTask == null) {
-            throw new TaskNotFoundException(task.getId());
-        }
+    public void update(Task task) throws TaskNotFoundException {
+        Task existingTask = getExistingOrThrow(task.getId());
         task.setCreatedAt(existingTask.getCreatedAt());
         task.setCreatedBy(existingTask.getCreatedBy());
-        tasks.put(task.getId(), task);
-    }*/
-
-    public void update(Task task) throws TaskNotFoundException {
-        if (!tasks.containsKey(task.getId())) {
-            throw new TaskNotFoundException(task.getId());
-        }
         tasks.put(task.getId(), task);
     }
 
     @Override
     public void deleteById(long id) throws TaskNotFoundException {
-        if (!tasks.containsKey(id)) {
-            throw new TaskNotFoundException(id);
-        }
+        getExistingOrThrow(id);
         tasks.remove(id);
     }
 
@@ -76,5 +66,13 @@ public class TaskInMemoryRepository implements TaskRepository {
             }
         }
         return countActiveTasks;
+    }
+
+    private Task getExistingOrThrow(long id) throws TaskNotFoundException {
+        Task task = tasks.get(id);
+        if (task == null) {
+            throw new TaskNotFoundException(id);
+        }
+        return task;
     }
 }
