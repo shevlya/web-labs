@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class TaskService {
     private static final int MAX_ACTIVE_TASKS = 10;
-    private static final int MIN_DELETE_MINUTES = 1;
+    private static final int MIN_DELETE_MINUTES = 5;
 
     private final TaskRepository taskRepository;
 

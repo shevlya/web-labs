@@ -1,10 +1,29 @@
-### 1. Создание задачи со статусом OPEN (201 Created)
+### 1.1 Создание задачи со статусом OPEN (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
 {
   "title": "Прочитать 30 страниц книги",
   "status": "OPEN",
+  "createdBy": 1
+}
+
+### 1.2 Пустое название задачи (400 Bad Request)
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "",
+  "status": "OPEN",
+  "createdBy": 1
+}
+
+### 1.3 Отсутствие статуса (400 Bad Request)
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Почитать перед сном",
   "createdBy": 1
 }
 
@@ -25,7 +44,7 @@ DELETE http://localhost:8080/tasks/1
 ### 3.2 Проверка ограничения на удаление задачи созданной менее 5 минут назад (400 Bad Request)
 DELETE http://localhost:8080/tasks/2
 
-### 4. Создание задачи со статусом DONE (201 Created)
+### 4.1 Создание задачи со статусом DONE (201 Created)
 POST http://localhost:8080/tasks
 Content-Type: application/json
 
