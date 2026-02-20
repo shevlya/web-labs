@@ -11,7 +11,7 @@ import java.util.Optional;
  * Интерфейс репозитория для управления жизненным циклом сущностей {@link Task}.
  * Обеспечивает абстракцию над механизмом хранения данных.
  */
-public interface TaskRepository {
+public interface TaskRepository extends JpaRepository {
 
     /**
      * Сохраняет новую задачу в хранилище.
