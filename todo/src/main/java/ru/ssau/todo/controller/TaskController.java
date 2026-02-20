@@ -4,10 +4,11 @@ import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.ssau.todo.entity.Task;
+import ru.ssau.todo.dto.TaskDto;
 import ru.ssau.todo.exception.TaskDeletionNotAllowedException;
 import ru.ssau.todo.exception.TaskNotFoundException;
 import ru.ssau.todo.exception.TooManyActiveTasksException;
+import ru.ssau.todo.exception.UserNotFoundException;
 import ru.ssau.todo.service.TaskService;
 
 import java.time.LocalDateTime;
@@ -23,36 +24,36 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> findAll(@RequestParam long userId,
-                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
+    public List<TaskDto> findAll(@RequestParam Long userId,
+                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
         return taskService.findAll(from, to, userId);
     }
 
     @GetMapping("/{id}")
-    public Task findById(@PathVariable long id) throws TaskNotFoundException {
-        return taskService.getByIdOrThrow(id);
+    public TaskDto findById(@PathVariable Long id) throws TaskNotFoundException {
+        return taskService.getById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Task createTask(@RequestBody @Valid Task task) throws TooManyActiveTasksException {
-        return taskService.createTask(task);
+    public TaskDto createTask(@RequestBody @Valid TaskDto taskDto) throws TooManyActiveTasksException, UserNotFoundException {
+        return taskService.createTask(taskDto);
     }
 
     @PutMapping("/{id}")
-    public Task updateTask(@PathVariable long id, @RequestBody @Valid Task task) throws TaskNotFoundException, TooManyActiveTasksException {
-        return taskService.update(id, task);
+    public TaskDto updateTask(@PathVariable Long id, @RequestBody @Valid TaskDto taskDto) throws TaskNotFoundException, TooManyActiveTasksException {
+        return taskService.update(id, taskDto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTask(@PathVariable long id) throws TaskNotFoundException, TaskDeletionNotAllowedException {
+    public void deleteTask(@PathVariable Long id) throws TaskNotFoundException, TaskDeletionNotAllowedException {
         taskService.deleteTask(id);
     }
 
     @GetMapping("/active/count")
-    public long countActive(@RequestParam long userId) {
+    public long countActive(@RequestParam Long userId) {
         return taskService.countActive(userId);
     }
 }

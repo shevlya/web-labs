@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.ssau.todo.exception.TaskNotFoundException;
 import ru.ssau.todo.exception.TaskDeletionNotAllowedException;
 import ru.ssau.todo.exception.TooManyActiveTasksException;
+import ru.ssau.todo.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -40,6 +41,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TaskNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, Object> handleNotFound(TaskNotFoundException e) {
+        return buildResponse(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleUserNotFound(UserNotFoundException e) {
         return buildResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 

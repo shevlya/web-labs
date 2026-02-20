@@ -1,27 +1,42 @@
 package ru.ssau.todo.entity;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "task")
 public class Task {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @NotBlank(message = "Заголовок не может быть пустым")
+    @Column(nullable = false)
     private String title;
+
     @NotNull(message = "Статус не может быть пустым")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TaskStatus status;
-    private long createdBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     public Task() {
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -41,11 +56,11 @@ public class Task {
         this.status = status;
     }
 
-    public long getCreatedBy() {
+    public User getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(long createdBy) {
+    public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
