@@ -1,13 +1,13 @@
 package ru.ssau.todo.entity;
 
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "user_account")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,7 +15,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 100)
     private String username;
 
-    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "createdBy")
     private List<Task> tasks = new ArrayList<>();
 
     @ManyToMany
@@ -26,47 +26,27 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
 
-    public User() {}
-
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public List<Task> getTasks() {
         return tasks;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
     }
 
     public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void addTask(Task task) {
-        tasks.add(task);
-        task.setCreatedBy(this);
-    }
-
-    public void removeTask(Task task) {
-        tasks.remove(task);
-        task.setCreatedBy(null);
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

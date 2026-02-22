@@ -10,8 +10,10 @@ public class TaskMapper {
         dto.setId(task.getId());
         dto.setTitle(task.getTitle());
         dto.setStatus(task.getStatus());
-        dto.setCreatedBy(task.getCreatedBy() != null ? task.getCreatedBy().getId() : null);
         dto.setCreatedAt(task.getCreatedAt());
+        if (task.getCreatedBy() != null) {
+            dto.setCreatedBy(task.getCreatedBy().getId());
+        }
         return dto;
     }
 

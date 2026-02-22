@@ -6,10 +6,7 @@ import ru.ssau.todo.dto.TaskDto;
 import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.entity.TaskStatus;
 import ru.ssau.todo.entity.User;
-import ru.ssau.todo.exception.TaskDeletionNotAllowedException;
-import ru.ssau.todo.exception.TaskNotFoundException;
-import ru.ssau.todo.exception.TooManyActiveTasksException;
-import ru.ssau.todo.exception.UserNotFoundException;
+import ru.ssau.todo.exception.*;
 import ru.ssau.todo.repository.TaskRepository;
 import ru.ssau.todo.repository.UserRepository;
 import ru.ssau.todo.utils.TaskMapper;
@@ -27,7 +24,8 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskService(TaskRepository taskRepository,
+                       UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
     }
@@ -48,59 +46,66 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDto createTask(TaskDto taskDto) throws TooManyActiveTasksException, UserNotFoundException {
-        Long userId = taskDto.getCreatedBy();
-        validateActiveLimit(userId, taskDto.getStatus());
+    public TaskDto createTask(TaskDto dto)
+            throws TooManyActiveTasksException, UserNotFoundException {
+
+        Long userId = dto.getCreatedBy();
+        validateActiveLimit(userId, dto.getStatus());
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        Task task = TaskMapper.toEntity(taskDto);
+        Task task = TaskMapper.toEntity(dto);
         task.setCreatedBy(user);
-        task.setCreatedAt(LocalDateTime.now());
 
-        Task saved = taskRepository.save(task);
-        return TaskMapper.toDto(saved);
+        return TaskMapper.toDto(taskRepository.save(task));
     }
 
     @Transactional
-    public TaskDto update(Long id, TaskDto taskDto) throws TaskNotFoundException, TooManyActiveTasksException {
+    public TaskDto update(Long id, TaskDto dto)
+            throws TaskNotFoundException, TooManyActiveTasksException {
+
         Task existing = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
 
-        validateActiveLimitOnUpdate(existing, taskDto.getStatus());
+        validateActiveLimitOnUpdate(existing, dto.getStatus());
 
-        existing.setTitle(taskDto.getTitle());
-        existing.setStatus(taskDto.getStatus());
+        existing.setTitle(dto.getTitle());
+        existing.setStatus(dto.getStatus());
 
-        Task updated = taskRepository.save(existing);
-        return TaskMapper.toDto(updated);
+        return TaskMapper.toDto(taskRepository.save(existing));
     }
 
     @Transactional
-    public void deleteTask(Long id) throws TaskNotFoundException, TaskDeletionNotAllowedException {
+    public void deleteTask(Long id)
+            throws TaskNotFoundException, TaskDeletionNotAllowedException {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
         long minutes = Duration.between(task.getCreatedAt(), LocalDateTime.now()).toMinutes();
         if (minutes < MIN_DELETE_MINUTES) {
             throw new TaskDeletionNotAllowedException(MIN_DELETE_MINUTES);
         }
-        taskRepository.deleteById(id);
+
+        taskRepository.delete(task);
     }
 
     @Transactional(readOnly = true)
     public long countActive(Long userId) {
-        return taskRepository.countActiveByUserId(userId);
+        return taskRepository.countActiveByUserId(
+                userId,
+                TaskStatus.getActiveStatuses()
+        );
     }
 
     private void validateActiveLimit(Long userId, TaskStatus status) throws TooManyActiveTasksException {
         if (!status.isActive()) return;
-        if (taskRepository.countActiveByUserId(userId) >= MAX_ACTIVE_TASKS) {
+        if (countActive(userId) >= MAX_ACTIVE_TASKS) {
             throw new TooManyActiveTasksException(userId);
         }
     }
 
-    private void validateActiveLimitOnUpdate(Task existing, TaskStatus newStatus) throws TooManyActiveTasksException {
+    private void validateActiveLimitOnUpdate(Task existing, TaskStatus newStatus)
+            throws TooManyActiveTasksException {
         if (newStatus.isActive() && !existing.getStatus().isActive()) {
             validateActiveLimit(existing.getCreatedBy().getId(), newStatus);
         }

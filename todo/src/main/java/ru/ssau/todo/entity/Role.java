@@ -1,13 +1,13 @@
 package ru.ssau.todo.entity;
 
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "role")
 public class Role {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,9 +17,6 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles")
     private List<User> users = new ArrayList<>();
-
-    public Role() {
-    }
 
     public Long getId() {
         return id;
@@ -43,15 +40,5 @@ public class Role {
 
     public void setUsers(List<User> users) {
         this.users = users;
-    }
-
-    public void addUser(User user) {
-        users.add(user);
-        user.getRoles().add(this);
-    }
-
-    public void removeUser(User user) {
-        users.remove(user);
-        user.getRoles().remove(this);
     }
 }

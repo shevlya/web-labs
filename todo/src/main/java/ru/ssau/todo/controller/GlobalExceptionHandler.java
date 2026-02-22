@@ -6,10 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.ssau.todo.exception.TaskNotFoundException;
-import ru.ssau.todo.exception.TaskDeletionNotAllowedException;
-import ru.ssau.todo.exception.TooManyActiveTasksException;
-import ru.ssau.todo.exception.UserNotFoundException;
+import ru.ssau.todo.exception.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -38,15 +35,9 @@ public class GlobalExceptionHandler {
         return buildResponse(message, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(TaskNotFoundException.class)
+    @ExceptionHandler({TaskNotFoundException.class, UserNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleNotFound(TaskNotFoundException e) {
-        return buildResponse(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleUserNotFound(UserNotFoundException e) {
+    public Map<String, Object> handleNotFound(Exception e) {
         return buildResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
@@ -58,7 +49,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, Object> handleAll(Exception e) {
+    public Map<String, Object> handleAll() {
         return buildResponse("Внутренняя ошибка сервера", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

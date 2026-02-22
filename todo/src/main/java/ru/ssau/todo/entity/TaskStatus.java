@@ -1,8 +1,8 @@
 package ru.ssau.todo.entity;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public enum TaskStatus {
     OPEN,
@@ -16,7 +16,7 @@ public enum TaskStatus {
         return ACTIVE.contains(this);
     }
 
-    public static Set<String> getActiveStatusNames() {
-        return ACTIVE.stream().map(Enum::name).collect(Collectors.toSet());
+    public static Set<TaskStatus> getActiveStatuses() {
+        return Collections.unmodifiableSet(ACTIVE);
     }
 }
