@@ -83,12 +83,12 @@ class TaskServiceTest {
 
     @Test
     void findAll_ShouldReturnList() {
-        when(taskRepository.findAllByUserIdAndDateRange(eq(USER_ID), any(), any()))
+        when(taskRepository.findAll(eq(USER_ID), any(), any()))
                 .thenReturn(List.of(testTask));
         List<TaskDto> result = taskService.findAll(null, null, USER_ID);
         assertEquals(1, result.size());
         assertEquals(testTask.getId(), result.get(0).getId());
-        verify(taskRepository).findAllByUserIdAndDateRange(USER_ID, null, null);
+        verify(taskRepository).findAll(USER_ID, null, null);
     }
 
     @Test

@@ -12,7 +12,7 @@ import java.util.Set;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query(value = "SELECT * FROM task WHERE created_by = :userId AND created_at BETWEEN COALESCE(:from, '-infinity'::timestamp) AND COALESCE(:to, 'infinity'::timestamp)", nativeQuery = true)
-    List<Task> findAllByUserIdAndDateRange(@Param("userId") Long userId, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+    List<Task> findAll(@Param("userId") Long userId, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query("SELECT COUNT(t) FROM Task t WHERE t.createdBy.id = :userId AND t.status IN :statuses")
     long countActiveByUserId(@Param("userId") Long userId, @Param("statuses") Set<TaskStatus> statuses);
