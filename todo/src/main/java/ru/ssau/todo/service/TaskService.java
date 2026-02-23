@@ -24,8 +24,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository,
-                       UserRepository userRepository) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
     }
@@ -46,39 +45,28 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDto createTask(TaskDto dto)
-            throws TooManyActiveTasksException, UserNotFoundException {
-
+    public TaskDto createTask(TaskDto dto) throws TooManyActiveTasksException, UserNotFoundException {
         Long userId = dto.getCreatedBy();
         validateActiveLimit(userId, dto.getStatus());
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
-
         Task task = TaskMapper.toEntity(dto);
         task.setCreatedBy(user);
-
         return TaskMapper.toDto(taskRepository.save(task));
     }
 
     @Transactional
-    public TaskDto update(Long id, TaskDto dto)
-            throws TaskNotFoundException, TooManyActiveTasksException {
-
+    public TaskDto update(Long id, TaskDto dto) throws TaskNotFoundException, TooManyActiveTasksException {
         Task existing = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
-
         validateActiveLimitOnUpdate(existing, dto.getStatus());
-
         existing.setTitle(dto.getTitle());
         existing.setStatus(dto.getStatus());
-
         return TaskMapper.toDto(taskRepository.save(existing));
     }
 
     @Transactional
-    public void deleteTask(Long id)
-            throws TaskNotFoundException, TaskDeletionNotAllowedException {
+    public void deleteTask(Long id) throws TaskNotFoundException, TaskDeletionNotAllowedException {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
         long minutes = Duration.between(task.getCreatedAt(), LocalDateTime.now()).toMinutes();
@@ -91,9 +79,7 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public long countActive(Long userId) {
-        return taskRepository.countActiveByUserId(
-                userId,
-                TaskStatus.getActiveStatuses()
+        return taskRepository.countActiveByUserId(userId, TaskStatus.getActiveStatuses()
         );
     }
 
