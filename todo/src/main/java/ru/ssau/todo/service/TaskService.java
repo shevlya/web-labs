@@ -31,7 +31,7 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public List<TaskDto> findAll(LocalDateTime from, LocalDateTime to, Long userId) {
-        return taskRepository.findAll(userId, from, to)
+        return taskRepository.findAllByUserAndDateRange(userId, from, to)
                 .stream()
                 .map(TaskMapper::toDto)
                 .collect(Collectors.toList());
