@@ -69,7 +69,8 @@ Content-Type: application/json
 
 {
   "title": "Прочитать 30 страниц книги",
-  "status": "DONE"
+  "status": "DONE",
+  "createdBy": 1
 }
 
 ### 8. Подсчёт активных задач пользователя (200 OK)

@@ -31,7 +31,7 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public List<TaskDto> findAll(LocalDateTime from, LocalDateTime to, Long userId) {
-        return taskRepository.findAllByUserAndDateRange(userId, from, to)
+        return taskRepository.findAll(userId, from, to)
                 .stream()
                 .map(TaskMapper::toDto)
                 .collect(Collectors.toList());
@@ -73,14 +73,12 @@ public class TaskService {
         if (minutes < MIN_DELETE_MINUTES) {
             throw new TaskDeletionNotAllowedException(MIN_DELETE_MINUTES);
         }
-
         taskRepository.delete(task);
     }
 
     @Transactional(readOnly = true)
     public long countActive(Long userId) {
-        return taskRepository.countActiveByUserId(userId, TaskStatus.getActiveStatuses()
-        );
+        return taskRepository.countActiveByUserId(userId, TaskStatus.getActiveStatuses());
     }
 
     private void validateActiveLimit(Long userId, TaskStatus status) throws TooManyActiveTasksException {
