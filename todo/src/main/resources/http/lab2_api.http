@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "title": "Прочитать 30 страниц книги",
   "status": "OPEN",
-  "createdBy": 1
+  "createdBy": 11
 }
 
 ### 1.2 Пустое название задачи (400 Bad Request)
