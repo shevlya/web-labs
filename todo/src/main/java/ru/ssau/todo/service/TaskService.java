@@ -1,5 +1,6 @@
 package ru.ssau.todo.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ssau.todo.dto.TaskDto;
@@ -43,11 +44,12 @@ public class TaskService {
         return TaskMapper.toDto(task);
     }
 
+    //getreferencebyid - не кинет сразу ошибку, поэтому нужно придумать, как её смоделировать
     @Transactional
     public TaskDto createTask(TaskDto dto) throws TooManyActiveTasksException, UserNotFoundException {
         Long userId = dto.getCreatedBy();
         validateActiveLimit(userId, dto.getStatus());
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        User user = getUserReferenceOrThrow(userId);
         Task task = TaskMapper.toEntity(dto);
         task.setCreatedBy(user);
         return TaskMapper.toDto(taskRepository.save(task));
@@ -92,6 +94,16 @@ public class TaskService {
             throws TooManyActiveTasksException {
         if (newStatus.isActive() && !existing.getStatus().isActive()) {
             validateActiveLimit(existing.getCreatedBy().getId(), newStatus);
+        }
+    }
+
+    private User getUserReferenceOrThrow(Long userId) throws UserNotFoundException {
+        try {
+            User user = userRepository.getReferenceById(userId);
+            user.getUsername();
+            return user;
+        } catch (EntityNotFoundException e) {
+            throw new UserNotFoundException(userId);
         }
     }
 }
