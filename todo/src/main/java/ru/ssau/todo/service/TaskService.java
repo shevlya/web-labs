@@ -44,7 +44,6 @@ public class TaskService {
         return TaskMapper.toDto(task);
     }
 
-    //getreferencebyid - не кинет сразу ошибку, поэтому нужно придумать, как её смоделировать
     @Transactional
     public TaskDto createTask(TaskDto dto) throws TooManyActiveTasksException, UserNotFoundException {
         Long userId = dto.getCreatedBy();
