@@ -1,6 +1,7 @@
 package ru.ssau.todo.controller;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,6 +47,16 @@ public class GlobalExceptionHandler {
     public Map<String, Object> handleBadRequest(Exception e) {
         return buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    /*
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleDataIntegrity(DataIntegrityViolationException e) {
+        if (e.getMessage().contains("fk_created_by") || e.getMessage().contains("user_account")) {
+            return buildResponse("Указанный пользователь не существует", HttpStatus.NOT_FOUND);
+        }
+        return buildResponse("Ошибка целостности данных", HttpStatus.NOT_FOUND);
+    }*/
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -1,6 +1,6 @@
 package ru.ssau.todo.service;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ssau.todo.dto.TaskDto;
@@ -44,14 +44,18 @@ public class TaskService {
         return TaskMapper.toDto(task);
     }
 
-    @Transactional
+    @Transactional (rollbackFor = {TooManyActiveTasksException.class, UserNotFoundException.class})
     public TaskDto createTask(TaskDto dto) throws TooManyActiveTasksException, UserNotFoundException {
         Long userId = dto.getCreatedBy();
         validateActiveLimit(userId, dto.getStatus());
-        User user = getUserReferenceOrThrow(userId);
+        User user = userRepository.getReferenceById(userId);
         Task task = TaskMapper.toEntity(dto);
         task.setCreatedBy(user);
-        return TaskMapper.toDto(taskRepository.save(task));
+        try {
+            return TaskMapper.toDto(taskRepository.save(task));
+        } catch (DataIntegrityViolationException e) {
+            throw new UserNotFoundException(userId);
+        }
     }
 
     @Transactional
@@ -93,16 +97,6 @@ public class TaskService {
             throws TooManyActiveTasksException {
         if (newStatus.isActive() && !existing.getStatus().isActive()) {
             validateActiveLimit(existing.getCreatedBy().getId(), newStatus);
-        }
-    }
-
-    private User getUserReferenceOrThrow(Long userId) throws UserNotFoundException {
-        try {
-            User user = userRepository.getReferenceById(userId);
-            user.getUsername();
-            return user;
-        } catch (EntityNotFoundException e) {
-            throw new UserNotFoundException(userId);
         }
     }
 }
