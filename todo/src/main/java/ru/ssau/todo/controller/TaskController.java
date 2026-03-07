@@ -34,7 +34,7 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskDto createTask(@RequestBody @Valid TaskDto dto) throws TooManyActiveTasksException, UserNotFoundException {
+    public TaskDto createTask(@RequestBody @Valid TaskDto dto) throws TooManyActiveTasksException, UserNotFoundByIdException {
         return taskService.createTask(dto);
     }
 

@@ -1,7 +1,6 @@
 package ru.ssau.todo.controller;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,7 +35,7 @@ public class GlobalExceptionHandler {
         return buildResponse(message, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({TaskNotFoundException.class, UserNotFoundException.class})
+    @ExceptionHandler({TaskNotFoundException.class, UserNotFoundByIdException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, Object> handleNotFound(Exception e) {
         return buildResponse(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -57,6 +56,18 @@ public class GlobalExceptionHandler {
         }
         return buildResponse("Ошибка целостности данных", HttpStatus.NOT_FOUND);
     }*/
+
+    @ExceptionHandler(UsernameExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleUsernameExists(UsernameExistsException e) {
+        return buildResponse(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleRoleNotFound(RoleNotFoundException e) {
+        return buildResponse(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

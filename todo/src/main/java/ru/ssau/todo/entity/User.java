@@ -15,6 +15,9 @@ public class User {
     @Column(nullable = false, unique = true, length = 100)
     private String username;
 
+    @Column(nullable = false, length = 256)
+    private String password;
+
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
 
@@ -36,6 +39,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public List<Task> getTasks() {

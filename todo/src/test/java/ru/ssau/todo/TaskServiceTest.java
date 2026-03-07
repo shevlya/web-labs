@@ -124,7 +124,7 @@ class TaskServiceTest {
     void createTask_UserNotFound_ShouldThrow() {
         TaskDto dto = createTaskDto(null, NEW_TASK_TITLE, TaskStatus.OPEN, NON_EXISTENT_ID);
         when(userRepository.findById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, () -> taskService.createTask(dto));
+        assertThrows(UserNotFoundByIdException.class, () -> taskService.createTask(dto));
     }
 
     @Test

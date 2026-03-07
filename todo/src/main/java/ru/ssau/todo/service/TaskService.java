@@ -44,8 +44,8 @@ public class TaskService {
         return TaskMapper.toDto(task);
     }
 
-    @Transactional (rollbackFor = {TooManyActiveTasksException.class, UserNotFoundException.class})
-    public TaskDto createTask(TaskDto dto) throws TooManyActiveTasksException, UserNotFoundException {
+    @Transactional (rollbackFor = {TooManyActiveTasksException.class, UserNotFoundByIdException.class})
+    public TaskDto createTask(TaskDto dto) throws TooManyActiveTasksException, UserNotFoundByIdException {
         Long userId = dto.getCreatedBy();
         validateActiveLimit(userId, dto.getStatus());
         User user = userRepository.getReferenceById(userId);
@@ -54,7 +54,7 @@ public class TaskService {
         try {
             return TaskMapper.toDto(taskRepository.save(task));
         } catch (DataIntegrityViolationException e) {
-            throw new UserNotFoundException(userId);
+            throw new UserNotFoundByIdException(userId);
         }
     }
 
