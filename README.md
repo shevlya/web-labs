@@ -1,5 +1,7 @@
 ## Добро пожаловать
 
+Entschuldigen Sie mich bitte, ich bin völlig schockiert...
+
 <div style="display: flex; gap: 10px;">
   <img src="bild-fuer-readme.jpg" alt="Bild für README" width="400"/>
   <img src="kermit-falling.gif" alt="Kermit falling" width="400"/>
