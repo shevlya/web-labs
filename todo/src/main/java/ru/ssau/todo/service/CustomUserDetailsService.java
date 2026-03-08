@@ -14,6 +14,9 @@ import ru.ssau.todo.exception.RoleNotFoundException;
 import ru.ssau.todo.exception.UsernameExistsException;
 import ru.ssau.todo.repository.RoleRepository;
 import ru.ssau.todo.repository.UserRepository;
+import ru.ssau.todo.security.CustomUserDetails;
+
+import java.util.List;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -31,8 +34,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь " + username + " не найден"));
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.getRoles()
-                .stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName())).toList());
+        //return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName())).toList());
+        List<SimpleGrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName())).toList();
+        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword(), authorities);
     }
 
     @Transactional
