@@ -3,9 +3,11 @@ package ru.ssau.todo.controller;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.ssau.todo.dto.TaskDto;
 import ru.ssau.todo.exception.*;
+import ru.ssau.todo.security.CustomUserDetails;
 import ru.ssau.todo.service.TaskService;
 
 import java.time.LocalDateTime;
@@ -34,7 +36,9 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskDto createTask(@RequestBody @Valid TaskDto dto) throws TooManyActiveTasksException, UserNotFoundByIdException {
+    public TaskDto createTask(@RequestBody @Valid TaskDto dto, Authentication authentication) throws TooManyActiveTasksException, UserNotFoundByIdException {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        dto.setCreatedBy(customUserDetails.getId());
         return taskService.createTask(dto);
     }
 
