@@ -1,0 +1,77 @@
+### 1. Регистрация обычного пользователя
+POST http://localhost:8080/users/register
+Content-Type: application/json
+
+{
+  "username": "aufgabe",
+  "password": "wirderledigt"
+}
+
+> {% client.global.set("user_username", "aufgabe"); %}
+
+### 2. Регистрация администратора
+POST http://localhost:8080/users/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "neuigkeit123"
+}
+
+### 3. Логин пользователя (получение токенов)
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "aufgabe",
+  "password": "wirderledigt"
+}
+
+> {%
+    client.global.set("user_access_token", response.body.accessToken);
+    client.global.set("user_refresh_token", response.body.refreshToken);
+%}
+
+### 4. Логин админа
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "neuigkeit123"
+}
+
+> {% client.global.set("admin_access_token", response.body.accessToken); %}
+
+### 5. Проверка информации о себе (User)
+GET http://localhost:8080/auth/me
+Authorization: Bearer {{user_access_token}}
+
+### 6. Создание задачи пользователем
+POST http://localhost:8080/tasks
+Content-Type: application/json
+Authorization: Bearer {{user_access_token}}
+
+{
+  "title": "Сделать лабораторную",
+  "status": "OPEN",
+  "createdBy": 0
+}
+
+> {% client.global.set("last_task_id", response.body.id); %}
+
+### 7. Попытка удаления задачи ОБЫЧНЫМ пользователем (Ожидается 403)
+DELETE http://localhost:8080/tasks/{{last_task_id}}
+Authorization: Bearer {{user_access_token}}
+
+### 8. Удаление задачи АДМИНИСТРАТОРОМ (Ожидается 204 или ошибка 400, если прошло < MIN_DELETE_MINUTES мин)
+DELETE http://localhost:8080/tasks/{{last_task_id}}
+Authorization: Bearer {{admin_access_token}}
+
+### 9. Обновление токена (Refresh)
+POST http://localhost:8080/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{user_refresh_token}}"
+}

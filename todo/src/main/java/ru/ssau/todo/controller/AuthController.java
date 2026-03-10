@@ -40,8 +40,9 @@ public class AuthController {
         );
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         long now = System.currentTimeMillis() / 1000;
-        Map<String,Object> accessPayload = new HashMap<>();
+        Map<String, Object> accessPayload = new HashMap<>();
         accessPayload.put("userId", customUserDetails.getId());
+        accessPayload.put("username", customUserDetails.getUsername());
         accessPayload.put("roles", customUserDetails.getAuthorities()
                 .stream()
                 .map(a -> a.getAuthority().replace("ROLE_", ""))
@@ -49,7 +50,7 @@ public class AuthController {
         accessPayload.put("iat", now);
         accessPayload.put("exp", now + 900);
         String accessToken = tokenService.generateToken(accessPayload);
-        Map<String,Object> refreshPayload = new HashMap<>();
+        Map<String, Object> refreshPayload = new HashMap<>();
         refreshPayload.put("userId", customUserDetails.getId());
         refreshPayload.put("iat", now);
         refreshPayload.put("exp", now + 604800);
@@ -67,6 +68,7 @@ public class AuthController {
         long now = System.currentTimeMillis() / 1000;
         Map<String, Object> accessPayload = new HashMap<>();
         accessPayload.put("userId", userDetails.getId());
+        accessPayload.put("username", userDetails.getUsername());
         accessPayload.put("roles", userDetails.getAuthorities()
                 .stream()
                 .map(a -> a.getAuthority().replace("ROLE_", ""))

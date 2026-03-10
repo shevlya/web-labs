@@ -62,6 +62,10 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             byte[] decoded = Base64.getUrlDecoder().decode(payloadPart);
             Map<String, Object> payload = mapper.readValue(new String(decoded), Map.class);
+            String username = (String) payload.get("username");
+            if (username == null) {
+                username = "unknown";
+            }
             long exp = ((Number) payload.get("exp")).longValue();
             long now = System.currentTimeMillis() / 1000;
             if (exp < now) {
@@ -76,7 +80,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
                 }
             }
-            CustomUserDetails customUserDetails = new CustomUserDetails(userId, "user", "", authorities);
+            CustomUserDetails customUserDetails = new CustomUserDetails(userId, username, "", authorities);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);

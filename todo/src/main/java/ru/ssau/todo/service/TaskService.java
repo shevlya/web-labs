@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService {
     private static final int MAX_ACTIVE_TASKS = 10;
-    private static final int MIN_DELETE_MINUTES = 5;
+    private static final int MIN_DELETE_MINUTES = 0;
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
