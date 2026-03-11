@@ -46,10 +46,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        String roleName = userDto.getUsername().equalsIgnoreCase("admin") ? "ROLE_ADMIN" : "ROLE_USER";
+        String roleName = resolveRoleName(userDto.getUsername());
         Role role = roleRepository.findByName(roleName).orElseThrow(() -> new RoleNotFoundException(roleName));
         user.getRoles().add(role);
         User savedUser = userRepository.save(user);
         return new UserDto(savedUser.getId(), savedUser.getUsername());
+    }
+
+    private String resolveRoleName(String username) {
+        return username.equalsIgnoreCase("admin") ? "ROLE_ADMIN" : "ROLE_USER";
     }
 }
