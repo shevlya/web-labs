@@ -28,7 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest  request) {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         return path.equals("/auth/login") || path.equals("/auth/refresh") || path.equals("/users/register");
     }
@@ -49,37 +49,21 @@ public class JwtFilter extends OncePerRequestFilter {
         String payloadPart = parts[0];
         String signaturePart = parts[1];
         try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec key = new SecretKeySpec(getSecret().getBytes(), "HmacSHA256");
-            mac.init(key);
-            byte[] signatureByte = mac.doFinal(payloadPart.getBytes());
-            String encodedSignature = Base64.getUrlEncoder()
-                    .withoutPadding()
-                    .encodeToString(signatureByte);
-            if (!encodedSignature.equals(signaturePart)) {
+            if (!isSignatureValid(payloadPart, signaturePart)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
             byte[] decoded = Base64.getUrlDecoder().decode(payloadPart);
             Map<String, Object> payload = mapper.readValue(new String(decoded), Map.class);
-            String username = (String) payload.get("username");
-            if (username == null) {
-                username = "unknown";
-            }
             long exp = ((Number) payload.get("exp")).longValue();
             long now = System.currentTimeMillis() / 1000;
             if (exp < now) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
+            String username = payload.get("username") != null ? (String) payload.get("username") : "unknown";
             Long userId = ((Number) payload.get("userId")).longValue();
-            List<String> roles = (List<String>) payload.get("roles");
-            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            if (roles != null) {
-                for (String role : roles) {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
-                }
-            }
+            List<SimpleGrantedAuthority> authorities = buildAuthorities((List<String>) payload.get("roles"));
             CustomUserDetails customUserDetails = new CustomUserDetails(userId, username, "", authorities);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -87,5 +71,26 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+    }
+
+    private boolean isSignatureValid(String payloadPart, String signaturePart) throws Exception {
+        Mac mac = Mac.getInstance("HmacSHA256");
+        SecretKeySpec key = new SecretKeySpec(getSecret().getBytes(), "HmacSHA256");
+        mac.init(key);
+        byte[] signatureByte = mac.doFinal(payloadPart.getBytes());
+        String encodedSignature = Base64.getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(signatureByte);
+        return encodedSignature.equals(signaturePart);
+    }
+
+    private List<SimpleGrantedAuthority> buildAuthorities(List<String> roles) {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        if (roles != null) {
+            for (String role : roles) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+            }
+        }
+        return authorities;
     }
 }

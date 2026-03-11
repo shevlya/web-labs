@@ -19,15 +19,8 @@ import ru.ssau.todo.service.CustomUserDetailsService;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-    //private final CustomUserDetailsService customUserDetailsService;
 
-    /*
-    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService customUserDetailsService) {
-        this.jwtFilter = jwtFilter;
-        this.customUserDetailsService = customUserDetailsService;
-    }*/
-
-    public  SecurityConfig(JwtFilter jwtFilter) {
+    public SecurityConfig(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
 
@@ -45,23 +38,18 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return  authenticationConfiguration.getAuthenticationManager();
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public SecurityFilterChain  securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login",
-                                "/auth/refresh",
-                                "/users/register")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/tasks/*")
-                        .hasRole("ADMIN")
-                        .anyRequest()
-                        .authenticated())
+                        .requestMatchers("/auth/login", "/auth/refresh", "/users/register").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/tasks/*").hasRole("ADMIN")
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
