@@ -35,42 +35,54 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
+        String token = extractToken(request);
+        if (token == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-        String token = header.substring(7);
-        String[] parts = token.split("\\.");
-        if (parts.length != 2) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-        String payloadPart = parts[0];
-        String signaturePart = parts[1];
         try {
-            if (!isSignatureValid(payloadPart, signaturePart)) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
-            byte[] decoded = Base64.getUrlDecoder().decode(payloadPart);
-            Map<String, Object> payload = mapper.readValue(new String(decoded), Map.class);
-            long exp = ((Number) payload.get("exp")).longValue();
-            long now = System.currentTimeMillis() / 1000;
-            if (exp < now) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
-            String username = payload.get("username") != null ? (String) payload.get("username") : "unknown";
-            Long userId = ((Number) payload.get("userId")).longValue();
-            List<SimpleGrantedAuthority> authorities = buildAuthorities((List<String>) payload.get("roles"));
-            CustomUserDetails customUserDetails = new CustomUserDetails(userId, username, "", authorities);
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Map<String, Object> payload = parseAndVerify(token);
+            setAuthentication(payload);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header == null || !header.startsWith("Bearer ")) {
+            return null;
+        }
+        return header.substring(7);
+    }
+
+    private Map<String, Object> parseAndVerify(String token) throws Exception {
+        String[] parts = token.split("\\.");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Неверный формат токена");
+        }
+        String payloadPart = parts[0];
+        String signaturePart = parts[1];
+        if (!isSignatureValid(payloadPart, signaturePart)) {
+            throw new SecurityException("Неверная подпись");
+        }
+        byte[] decoded = Base64.getUrlDecoder().decode(payloadPart);
+        Map<String, Object> payload = mapper.readValue(new String(decoded), Map.class);
+        long exp = ((Number) payload.get("exp")).longValue();
+        if (exp < System.currentTimeMillis() / 1000) {
+            throw new SecurityException("Токен истёк");
+        }
+        return payload;
+    }
+
+    private void setAuthentication(Map<String, Object> payload) {
+        String username = payload.get("username") != null ? (String) payload.get("username") : "unknown";
+        Long userId = ((Number) payload.get("userId")).longValue();
+        List<SimpleGrantedAuthority> authorities = buildAuthorities((List<String>) payload.get("roles"));
+        CustomUserDetails customUserDetails = new CustomUserDetails(userId, username, "", authorities);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private boolean isSignatureValid(String payloadPart, String signaturePart) throws Exception {

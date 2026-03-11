@@ -72,3 +72,18 @@ Content-Type: application/json
 {
   "refreshToken": "{{user_refresh_token}}"
 }
+
+### 10. Неверный формат токена (ожидается 401)
+GET http://localhost:8080/auth/me
+Authorization: Bearer thisisnottokenatall
+
+### 11. Неверная подпись (ожидается 401)
+GET http://localhost:8080/auth/me
+Authorization: Bearer ": eyJyb2xlcyI6WyJVU0VSIl0sImV4cCI6MTc3MzI2NDUwOSwidXNlcklkIjoyLCJpYXQiOjE3NzMyNjM2MDksInVzZXJuYW1lIjoiYXVmZ2FiZSJ9.fakesignature
+
+### 12. Истёкший токен (ожидается 401)
+GET http://localhost:8080/auth/me
+Authorization: Bearer eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoidGVzdCIsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwMDA5MDB9.fakesignature
+
+### 13. Отсутствует заголовок Authorization (ожидается 401)
+GET http://localhost:8080/auth/me
