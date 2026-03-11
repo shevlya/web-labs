@@ -7,8 +7,6 @@ Content-Type: application/json
   "password": "wirderledigt"
 }
 
-> {% client.global.set("user_username", "aufgabe"); %}
-
 ### 2. Регистрация администратора
 POST http://localhost:8080/users/register
 Content-Type: application/json
@@ -32,7 +30,7 @@ Content-Type: application/json
     client.global.set("user_refresh_token", response.body.refreshToken);
 %}
 
-### 4. Логин админа
+### 4. Логин администратора
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 
@@ -43,32 +41,31 @@ Content-Type: application/json
 
 > {% client.global.set("admin_access_token", response.body.accessToken); %}
 
-### 5. Проверка информации о себе (User)
+### 5. Информация о текущем пользователе
 GET http://localhost:8080/auth/me
 Authorization: Bearer {{user_access_token}}
 
-### 6. Создание задачи пользователем
+### 6. Создание задачи
 POST http://localhost:8080/tasks
 Content-Type: application/json
 Authorization: Bearer {{user_access_token}}
 
 {
   "title": "Сделать лабораторную",
-  "status": "OPEN",
-  "createdBy": 0
+  "status": "OPEN"
 }
 
 > {% client.global.set("last_task_id", response.body.id); %}
 
-### 7. Попытка удаления задачи ОБЫЧНЫМ пользователем (Ожидается 403)
+### 7. Попытка удаления задачи обычным пользователем (ожидается 403)
 DELETE http://localhost:8080/tasks/{{last_task_id}}
 Authorization: Bearer {{user_access_token}}
 
-### 8. Удаление задачи АДМИНИСТРАТОРОМ (Ожидается 204 или ошибка 400, если прошло < MIN_DELETE_MINUTES мин)
+### 8. Удаление задачи администратором (ожидается 204)
 DELETE http://localhost:8080/tasks/{{last_task_id}}
 Authorization: Bearer {{admin_access_token}}
 
-### 9. Обновление токена (Refresh)
+### 9. Обновление токена
 POST http://localhost:8080/auth/refresh
 Content-Type: application/json
 

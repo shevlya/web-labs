@@ -33,29 +33,10 @@ public class AuthController {
     @PostMapping("/login")
     public TokenResponse login(@RequestBody @Valid UserRequest userRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        userRequest.getUsername(),
-                        userRequest.getPassword()
-                )
+                new UsernamePasswordAuthenticationToken(userRequest.getUsername(), userRequest.getPassword())
         );
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        long now = System.currentTimeMillis() / 1000;
-        Map<String, Object> accessPayload = new HashMap<>();
-        accessPayload.put("userId", customUserDetails.getId());
-        accessPayload.put("username", customUserDetails.getUsername());
-        accessPayload.put("roles", customUserDetails.getAuthorities()
-                .stream()
-                .map(a -> a.getAuthority().replace("ROLE_", ""))
-                .toList());
-        accessPayload.put("iat", now);
-        accessPayload.put("exp", now + 900);
-        String accessToken = tokenService.generateToken(accessPayload);
-        Map<String, Object> refreshPayload = new HashMap<>();
-        refreshPayload.put("userId", customUserDetails.getId());
-        refreshPayload.put("iat", now);
-        refreshPayload.put("exp", now + 604800);
-        String refreshToken = tokenService.generateToken(refreshPayload);
-        return new TokenResponse(accessToken, refreshToken);
+        return buildTokenResponse(customUserDetails);
     }
 
     @PostMapping("/refresh")
@@ -63,19 +44,9 @@ public class AuthController {
         String refreshToken = request.get("refreshToken");
         Map<String, Object> payload = tokenService.parseAndValidate(refreshToken);
         Long userId = ((Number) payload.get("userId")).longValue();
-        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(
+        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(
                 userRepository.findById(userId).orElseThrow().getUsername());
-        long now = System.currentTimeMillis() / 1000;
-        Map<String, Object> accessPayload = new HashMap<>();
-        accessPayload.put("userId", userDetails.getId());
-        accessPayload.put("username", userDetails.getUsername());
-        accessPayload.put("roles", userDetails.getAuthorities()
-                .stream()
-                .map(a -> a.getAuthority().replace("ROLE_", ""))
-                .toList());
-        accessPayload.put("iat", now);
-        accessPayload.put("exp", now + 900);
-        String newAccessToken = tokenService.generateToken(accessPayload);
+        String newAccessToken = tokenService.generateToken(buildAccessPayload(customUserDetails));
         return new TokenResponse(newAccessToken, refreshToken);
     }
 
@@ -89,5 +60,34 @@ public class AuthController {
                 .map(a -> a.getAuthority())
                 .toList());
         return response;
+    }
+
+    private TokenResponse buildTokenResponse(CustomUserDetails customUserDetails) {
+        String accessToken = tokenService.generateToken(buildAccessPayload(customUserDetails));
+        String refreshToken = tokenService.generateToken(buildRefreshPayload(customUserDetails));
+        return new TokenResponse(accessToken, refreshToken);
+    }
+
+    private Map<String, Object> buildAccessPayload(CustomUserDetails customUserDetails) {
+        long now = System.currentTimeMillis() / 1000;
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("userId", customUserDetails.getId());
+        payload.put("username", customUserDetails.getUsername());
+        payload.put("roles",  customUserDetails.getAuthorities()
+                .stream()
+                .map(a -> a.getAuthority().replace("ROLE_", ""))
+                .toList());
+        payload.put("iat", now);
+        payload.put("exp", now + 900);
+        return payload;
+    }
+
+    private Map<String, Object> buildRefreshPayload(CustomUserDetails customUserDetails) {
+        long now = System.currentTimeMillis() / 1000;
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("userId",  customUserDetails.getId());
+        payload.put("iat", now);
+        payload.put("exp", now + 604800);
+        return payload;
     }
 }

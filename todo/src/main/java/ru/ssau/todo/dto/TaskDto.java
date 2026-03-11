@@ -15,7 +15,7 @@ public class TaskDto {
     @NotNull(message = "Статус не может быть пустым")
     private TaskStatus status;
 
-    @NotNull(message = "Создатель задачи обязателен")
+    //@NotNull(message = "Создатель задачи обязателен")
     private Long createdBy;
     private LocalDateTime createdAt;
 
