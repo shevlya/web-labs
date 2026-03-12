@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.ssau.todo.dto.TokenResponse;
 import ru.ssau.todo.dto.UserRequest;
+import ru.ssau.todo.exception.TokenValidationException;
 import ru.ssau.todo.repository.UserRepository;
 import ru.ssau.todo.security.CustomUserDetails;
 import ru.ssau.todo.security.TokenService;
@@ -40,7 +41,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public TokenResponse refresh(@RequestBody Map<String, String> request) {
+    public TokenResponse refresh(@RequestBody Map<String, String> request) throws TokenValidationException {
         String refreshToken = request.get("refreshToken");
         Map<String, Object> payload = tokenService.parseAndValidate(refreshToken);
         Long userId = ((Number) payload.get("userId")).longValue();

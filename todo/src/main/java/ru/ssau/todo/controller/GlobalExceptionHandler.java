@@ -69,6 +69,12 @@ public class GlobalExceptionHandler {
         return buildResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(TokenValidationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, Object> handleTokenValidation(TokenValidationException e) {
+        return buildResponse(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, Object> handleAll() {
