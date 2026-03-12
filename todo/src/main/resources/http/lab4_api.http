@@ -7,16 +7,7 @@ Content-Type: application/json
   "password": "wirderledigt"
 }
 
-### 2. Регистрация администратора
-POST http://localhost:8080/users/register
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "password": "neuigkeit123"
-}
-
-### 3. Логин пользователя (получение токенов)
+### 2. Логин пользователя (получение токенов)
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 
@@ -29,17 +20,6 @@ Content-Type: application/json
     client.global.set("user_access_token", response.body.accessToken);
     client.global.set("user_refresh_token", response.body.refreshToken);
 %}
-
-### 4. Логин администратора
-POST http://localhost:8080/auth/login
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "password": "neuigkeit123"
-}
-
-> {% client.global.set("admin_access_token", response.body.accessToken); %}
 
 ### 5. Информация о текущем пользователе
 GET http://localhost:8080/auth/me
@@ -61,11 +41,22 @@ Authorization: Bearer {{user_access_token}}
 DELETE http://localhost:8080/tasks/{{last_task_id}}
 Authorization: Bearer {{user_access_token}}
 
-### 8. Удаление задачи администратором (ожидается 204)
+### 8. Логин администратора
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "neuigkeit123"
+}
+
+> {% client.global.set("admin_access_token", response.body.accessToken); %}
+
+### 9. Удаление задачи администратором (ожидается 204)
 DELETE http://localhost:8080/tasks/{{last_task_id}}
 Authorization: Bearer {{admin_access_token}}
 
-### 9. Обновление токена
+### 10. Обновление токена
 POST http://localhost:8080/auth/refresh
 Content-Type: application/json
 
@@ -73,17 +64,17 @@ Content-Type: application/json
   "refreshToken": "{{user_refresh_token}}"
 }
 
-### 10. Неверный формат токена (ожидается 401)
+### 11. Неверный формат токена (ожидается 401)
 GET http://localhost:8080/auth/me
 Authorization: Bearer thisisnottokenatall
 
-### 11. Неверная подпись (ожидается 401)
+### 12. Неверная подпись (ожидается 401)
 GET http://localhost:8080/auth/me
 Authorization: Bearer ": eyJyb2xlcyI6WyJVU0VSIl0sImV4cCI6MTc3MzI2NDUwOSwidXNlcklkIjoyLCJpYXQiOjE3NzMyNjM2MDksInVzZXJuYW1lIjoiYXVmZ2FiZSJ9.fakesignature
 
-### 12. Истёкший токен (ожидается 401)
+### 13. Истёкший токен (ожидается 401)
 GET http://localhost:8080/auth/me
 Authorization: Bearer eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoidGVzdCIsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwMDA5MDB9.fakesignature
 
-### 13. Отсутствует заголовок Authorization (ожидается 401)
+### 14. Отсутствует заголовок Authorization (ожидается 401)
 GET http://localhost:8080/auth/me
