@@ -70,7 +70,7 @@ Authorization: Bearer thisisnottokenatall
 
 ### 12. Неверная подпись (ожидается 401)
 GET http://localhost:8080/auth/me
-Authorization: Bearer ": eyJyb2xlcyI6WyJVU0VSIl0sImV4cCI6MTc3MzI2NDUwOSwidXNlcklkIjoyLCJpYXQiOjE3NzMyNjM2MDksInVzZXJuYW1lIjoiYXVmZ2FiZSJ9.fakesignature
+Authorization: Bearer eyJyb2xlcyI6WyJVU0VSIl0sImV4cCI6MTc3MzI2NDUwOSwidXNlcklkIjoyLCJpYXQiOjE3NzMyNjM2MDksInVzZXJuYW1lIjoiYXVmZ2FiZSJ9.fakesignature
 
 ### 13. Истёкший токен (ожидается 401)
 GET http://localhost:8080/auth/me

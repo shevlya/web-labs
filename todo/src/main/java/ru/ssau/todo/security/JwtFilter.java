@@ -9,22 +9,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import tools.jackson.databind.ObjectMapper;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final TokenService tokenService;
 
-    private String getSecret() {
-        return System.getenv("JWT_SECRET");
+    public JwtFilter(TokenService tokenService) {
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -41,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
         try {
-            Map<String, Object> payload = parseAndVerify(token);
+            Map<String, Object> payload = tokenService.parseAndValidate(token);
             setAuthentication(payload);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
@@ -57,51 +53,23 @@ public class JwtFilter extends OncePerRequestFilter {
         return header.substring(7);
     }
 
-    private Map<String, Object> parseAndVerify(String token) throws Exception {
-        String[] parts = token.split("\\.");
-        if (parts.length != 2) {
-            throw new IllegalArgumentException("Неверный формат токена");
-        }
-        String payloadPart = parts[0];
-        String signaturePart = parts[1];
-        if (!isSignatureValid(payloadPart, signaturePart)) {
-            throw new SecurityException("Неверная подпись");
-        }
-        byte[] decoded = Base64.getUrlDecoder().decode(payloadPart);
-        Map<String, Object> payload = mapper.readValue(new String(decoded), Map.class);
-        long exp = ((Number) payload.get("exp")).longValue();
-        if (exp < System.currentTimeMillis() / 1000) {
-            throw new SecurityException("Токен истёк");
-        }
-        return payload;
-    }
-
     private void setAuthentication(Map<String, Object> payload) {
-        String username = payload.get("username") != null ? (String) payload.get("username") : "unknown";
+        String username = (String) payload.get("username");
+        List<String> roles = (List<String>) payload.get("roles");
+        if (username == null || roles == null) {
+            throw new IllegalArgumentException("Недостаточно данных в токене");
+        }
         Long userId = ((Number) payload.get("userId")).longValue();
-        List<SimpleGrantedAuthority> authorities = buildAuthorities((List<String>) payload.get("roles"));
+        List<SimpleGrantedAuthority> authorities = buildAuthorities(roles);
         CustomUserDetails customUserDetails = new CustomUserDetails(userId, username, "", authorities);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private boolean isSignatureValid(String payloadPart, String signaturePart) throws Exception {
-        Mac mac = Mac.getInstance("HmacSHA256");
-        SecretKeySpec key = new SecretKeySpec(getSecret().getBytes(), "HmacSHA256");
-        mac.init(key);
-        byte[] signatureByte = mac.doFinal(payloadPart.getBytes());
-        String encodedSignature = Base64.getUrlEncoder()
-                .withoutPadding()
-                .encodeToString(signatureByte);
-        return encodedSignature.equals(signaturePart);
-    }
-
     private List<SimpleGrantedAuthority> buildAuthorities(List<String> roles) {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        if (roles != null) {
-            for (String role : roles) {
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
-            }
+        for (String role : roles) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
         }
         return authorities;
     }
