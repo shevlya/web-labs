@@ -3,7 +3,7 @@ POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
-  "username": "aufgabe",
+  "username": "artem",
   "password": "wirderledigt"
 }
 
@@ -12,7 +12,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "username": "aufgabe",
+  "username": "artem",
   "password": "wirderledigt"
 }
 
@@ -21,11 +21,11 @@ Content-Type: application/json
     client.global.set("user_refresh_token", response.body.refreshToken);
 %}
 
-### 5. Информация о текущем пользователе
+### 3. Информация о текущем пользователе
 GET http://localhost:8080/auth/me
 Authorization: Bearer {{user_access_token}}
 
-### 6. Создание задачи
+### 4. Создание задачи
 POST http://localhost:8080/tasks
 Content-Type: application/json
 Authorization: Bearer {{user_access_token}}
@@ -37,11 +37,11 @@ Authorization: Bearer {{user_access_token}}
 
 > {% client.global.set("last_task_id", response.body.id); %}
 
-### 7. Попытка удаления задачи обычным пользователем (ожидается 403)
+### 5. Попытка удаления задачи обычным пользователем (ожидается 403)
 DELETE http://localhost:8080/tasks/{{last_task_id}}
 Authorization: Bearer {{user_access_token}}
 
-### 8. Логин администратора
+### 6. Логин администратора
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 
@@ -52,11 +52,11 @@ Content-Type: application/json
 
 > {% client.global.set("admin_access_token", response.body.accessToken); %}
 
-### 9. Удаление задачи администратором (ожидается 204)
+### 7. Удаление задачи администратором (ожидается 204)
 DELETE http://localhost:8080/tasks/{{last_task_id}}
 Authorization: Bearer {{admin_access_token}}
 
-### 10. Обновление токена
+### 8. Обновление токена
 POST http://localhost:8080/auth/refresh
 Content-Type: application/json
 
@@ -64,17 +64,17 @@ Content-Type: application/json
   "refreshToken": "{{user_refresh_token}}"
 }
 
-### 11. Неверный формат токена (ожидается 401)
+### 9. Неверный формат токена (ожидается 401)
 GET http://localhost:8080/auth/me
 Authorization: Bearer thisisnottokenatall
 
-### 12. Неверная подпись (ожидается 401)
+### 10. Неверная подпись (ожидается 401)
 GET http://localhost:8080/auth/me
 Authorization: Bearer eyJyb2xlcyI6WyJVU0VSIl0sImV4cCI6MTc3MzI2NDUwOSwidXNlcklkIjoyLCJpYXQiOjE3NzMyNjM2MDksInVzZXJuYW1lIjoiYXVmZ2FiZSJ9.fakesignature
 
-### 13. Истёкший токен (ожидается 401)
+### 11. Истёкший токен (ожидается 401)
 GET http://localhost:8080/auth/me
 Authorization: Bearer eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoidGVzdCIsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwMDA5MDB9.fakesignature
 
-### 14. Отсутствует заголовок Authorization (ожидается 401)
+### 12. Отсутствует заголовок Authorization (ожидается 401)
 GET http://localhost:8080/auth/me
