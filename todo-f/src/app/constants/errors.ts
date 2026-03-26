@@ -10,6 +10,9 @@ export const ERROR_MESSAGES = {
     LOAD_FAILED: 'Не удалось загрузить задачу',
     SAVE_FAILED: 'Ошибка сохранения',
     DELETE_FAILED: 'Не удалось удалить задачу',
-    LIST_LOAD_FAILED: 'Ошибка загрузки задач'
+    LIST_LOAD_FAILED: 'Ошибка загрузки задач',
+    DELETE_FORBIDDEN: 'Ошибка доступа: Только администратор может удалять задачи',
+    ACTIVE_LIMIT_EXCEEDED: 'Превышен лимит активных задач. Завершите некоторые задачи перед созданием новых',
+    NOT_FOUND: 'Задача не найдена'
   }
 } as const;

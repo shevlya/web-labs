@@ -6,6 +6,7 @@ import {TaskStatus, TaskStatusLabels} from '../../models/tasks';
 import {TaskService} from '../../services/task.service';
 import { APP_CONSTANTS } from '../../constants/app';
 import { ERROR_MESSAGES } from '../../constants/errors';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-edit-task',
@@ -83,9 +84,13 @@ export class EditTaskComponent {
         this.isSaving = false;
         this.router.navigate(['/tasks']);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.isSaving = false;
-        this.setError(err.error?.message ?? ERROR_MESSAGES.TASK.SAVE_FAILED);
+        if (err.status === 400 && err.error?.message?.includes('лимит')) {
+          this.setError(ERROR_MESSAGES.TASK.ACTIVE_LIMIT_EXCEEDED);
+        } else {
+          this.setError(err.error?.message ?? ERROR_MESSAGES.TASK.SAVE_FAILED);
+        }
       }
     });
   }

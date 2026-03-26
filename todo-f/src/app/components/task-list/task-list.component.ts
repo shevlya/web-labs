@@ -6,6 +6,7 @@ import {Task} from '../../models/tasks';
 import {TaskService} from '../../services/task.service';
 import {AuthService} from '../../services/auth.service';
 import { ERROR_MESSAGES } from '../../constants/errors';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-task-list',
@@ -53,10 +54,16 @@ export class TaskListComponent {
       next: () => {
         this.tasks = this.tasks.filter(t => t.id !== id);
       },
-      error: (err) => {
-        const msg = err.error?.message ?? ERROR_MESSAGES.TASK.DELETE_FAILED;
-        alert(msg);
-      },
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 403) {
+          alert(ERROR_MESSAGES.TASK.DELETE_FORBIDDEN);
+        } else if (err.status === 404) {
+          alert(ERROR_MESSAGES.TASK.NOT_FOUND);
+        } else {
+          const msg = err.error?.message ?? ERROR_MESSAGES.TASK.DELETE_FAILED;
+          alert(msg); 
+        }
+      }
     });
   }
 
