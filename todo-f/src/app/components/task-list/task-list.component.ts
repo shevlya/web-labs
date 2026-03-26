@@ -5,6 +5,7 @@ import {TaskCardComponent} from '../task-card/task-card.component';
 import {Task} from '../../models/tasks';
 import {TaskService} from '../../services/task.service';
 import {AuthService} from '../../services/auth.service';
+import { ERROR_MESSAGES } from '../../constants/errors';
 
 @Component({
   selector: 'app-task-list',
@@ -31,21 +32,16 @@ export class TaskListComponent {
   loadTasks(): void {
     const userId = this.authService.getUserId();
     if (userId == null) {
-      this.errorMessage = 'Не удалось определить пользователя';
-      this.isLoading = false;
+      this.setError(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
       return;
     }
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.setLoading(true);
     this.taskService.getTasks(userId).subscribe({
       next: tasks => {
         this.tasks = tasks;
-        this.isLoading = false;
+        this.setLoading(false);
       },
-      error: () => {
-        this.errorMessage = 'Ошибка загрузки задач';
-        this.isLoading = false;
-      }
+      error: () => this.setError(ERROR_MESSAGES.TASK.LIST_LOAD_FAILED)
     });
   }
 
@@ -58,7 +54,7 @@ export class TaskListComponent {
         this.tasks = this.tasks.filter(t => t.id !== id);
       },
       error: (err) => {
-        const msg = err.error?.message ?? 'Не удалось удалить задачу';
+        const msg = err.error?.message ?? ERROR_MESSAGES.TASK.DELETE_FAILED;
         alert(msg);
       },
     });
@@ -66,5 +62,15 @@ export class TaskListComponent {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  private setLoading(loading: boolean): void {
+    this.isLoading = loading;
+    if (loading) this.errorMessage = '';
+  }
+
+  private setError(message: string): void {
+    this.errorMessage = message;
+    this.isLoading = false;
   }
 }

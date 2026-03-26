@@ -4,6 +4,8 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {TaskStatus, TaskStatusLabels} from '../../models/tasks';
 import {TaskService} from '../../services/task.service';
+import { APP_CONSTANTS } from '../../constants/app';
+import { ERROR_MESSAGES } from '../../constants/errors';
 
 @Component({
   selector: 'app-edit-task',
@@ -22,6 +24,8 @@ export class EditTaskComponent {
 
   readonly taskStatuses = Object.values(TaskStatus);
   readonly TaskStatusLabels = TaskStatusLabels;
+  
+  readonly titleMaxLength = APP_CONSTANTS.VALIDATION.TITLE_MAX_LENGTH;
 
   get titleControl() {
     return this.form.get('title');
@@ -38,7 +42,7 @@ export class EditTaskComponent {
     private taskService: TaskService
   ) {
     this.form = this.fb.group({
-      title: ['', [Validators.required, Validators.maxLength(500)]],
+      title: ['', [Validators.required, Validators.maxLength(this.titleMaxLength)]],
       status: [TaskStatus.OPEN, [Validators.required]]
     });
   }
@@ -58,12 +62,9 @@ export class EditTaskComponent {
     this.taskService.getTask(this.taskId).subscribe({
       next: task => {
         this.form.patchValue({title: task.title, status: task.status});
-        this.isLoading = false;
+        this.setLoading(false);
       },
-      error: () => {
-        this.errorMessage = 'Не удалось загрузить задачу';
-        this.isLoading = false;
-      }
+      error: () => this.setError(ERROR_MESSAGES.TASK.LOAD_FAILED)
     });
   }
 
@@ -73,7 +74,7 @@ export class EditTaskComponent {
       return;
     }
     this.isSaving = true;
-    this.errorMessage = '';
+    this.clearError();
     const payload = this.form.value;
     const required$ = (this.isEditMode && this.taskId) ? this.taskService.updateTask(this.taskId, payload) : this.taskService.createTask(payload);
 
@@ -84,8 +85,22 @@ export class EditTaskComponent {
       },
       error: (err) => {
         this.isSaving = false;
-        this.errorMessage = err.error?.message ?? 'Ошибка сохранения';
+        this.setError(err.error?.message ?? ERROR_MESSAGES.TASK.SAVE_FAILED);
       }
     });
+  }
+
+  private setLoading(loading: boolean): void {
+    this.isLoading = loading;
+    if (loading) this.clearError();
+  }
+
+  private setError(message: string): void {
+    this.errorMessage = message;
+    this.isLoading = false;
+  }
+
+  private clearError(): void {
+    this.errorMessage = '';
   }
 }
