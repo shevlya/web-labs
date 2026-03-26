@@ -1,1 +1,43 @@
-<p>login works!</p>
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo">-</div>
+      <h1>Todo App</h1>
+      <p>Войдите в свой аккаунт</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="field-group">
+        <label for="username">Логин</label>
+        <input id="username" type="text" formControlName="username" placeholder="Введите логин" autocomplete="username"
+               [class.invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+        />
+        @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+          <span class="field-error">Логин обязателен</span>
+        }
+      </div>
+
+      <div class="field-group">
+        <label for="password">Пароль</label>
+        <input id="password" type="password" formControlName="password" placeholder="Введите пароль"
+               autocomplete="current-password"
+               [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"/>
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <span class="field-error">Пароль обязателен</span>
+        }
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-banner">{{ errorMessage }}</div>
+      }
+
+      <button type="submit" class="btn-primary" [disabled]="isLoading">
+        @if (isLoading) {
+          Вход...
+        } @else {
+          Войти
+        }
+      </button>
+    </form>
+  </div>
+</div>

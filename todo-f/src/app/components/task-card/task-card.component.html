@@ -1,0 +1,15 @@
+<div class="task-card">
+  <div class="card-header">
+        <span class="status-badge status-{{task.status | lowercase}}">
+            {{ TaskStatusLabels[task.status] }}
+        </span>
+    <span class="created-at">{{ task.createdAt | date: 'dd.MM.yyyy HH:mm' }}</span>
+  </div>
+
+  <h3 class="task-title">{{ task.title }}</h3>
+
+  <div class="card-actions">
+    <a [routerLink]="['/tasks', task.id]" class="btn-edit">Редактировать</a>
+    <button class="btn-delete" (click)="onDelete()">Удалить</button>
+  </div>
+</div>

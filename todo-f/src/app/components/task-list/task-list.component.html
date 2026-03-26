@@ -1,1 +1,38 @@
-<p>task-list works!</p>
+<div class="list-wrapper">
+  <header class="list-header">
+    <div class="header-left">
+      <div class="logo-mark">-</div>
+      <h1>Мои задачи</h1>
+    </div>
+    <div class="header-right">
+      <a routerLink="/tasks/new" class="btn-create">+ Создать задачу</a>
+      <button class="btn-logout" (click)="logout()">Выйти</button>
+    </div>
+  </header>
+
+  <main class="list-content">
+    @if (isLoading) {
+      <div class="state-center">
+        <div class="spinner"></div>
+        <p>Загрузка задач...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="state-center">
+        <p class="error-text">{{ errorMessage }}</p>
+        <button class="btn-retry" (click)="loadTasks()">Повторить</button>
+      </div>
+    } @else if (tasks.length === 0) {
+      <div class="state-center empty">
+        <div class="empty-icon">📋</div>
+        <p>Задач пока нет</p>
+        <a routerLink="/tasks/new" class="btn-create">Создать первую задачу</a>
+      </div>
+    } @else {
+      <div class="tasks-grid">
+        @for (task of tasks; track task.id) {
+          <app-task-card [task]="task" (deleteTask)="onDeleteTask($event)"></app-task-card>
+        }
+      </div>
+    }
+  </main>
+</div>
