@@ -1,0 +1,63 @@
+@import 'variables';
+@import 'mixins';
+
+.login-card,
+.edit-card {
+  @include card-base;
+  box-shadow: $shadow-xl;
+}
+
+.login-card {
+  max-width: 420px;
+}
+
+.edit-card {
+  max-width: 600px;
+  box-shadow: $shadow-md;
+}
+
+.task-card {
+  background: white;
+  border-radius: $border-radius-lg;
+  padding: 1.25rem 1.5rem;
+  box-shadow: $shadow-sm;
+  border: 1px solid $primary-100;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  transition: transform $transition-normal, box-shadow $transition-normal;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+.status-badge {
+  font-size: $font-size-xs;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  &.status-open {
+    background: $info-50;
+    color: $info-600;
+  }
+
+  &.status-in_progress {
+    background: $warning-50;
+    color: $warning-600;
+  }
+
+  &.status-done {
+    background: $success-50;
+    color: $success-600;
+  }
+
+  &.status-closed {
+    background: $gray-50;
+    color: $gray-500;
+  }
+}

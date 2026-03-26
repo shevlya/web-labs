@@ -50,7 +50,7 @@ export class TaskListComponent {
   }
 
   onDeleteTask(id: number): void {
-    if (!confirm('Вы уверины, что хотите удалить эту задачу?')) {
+    if (!confirm('Вы уверены, что хотите удалить эту задачу?')) {
       return;
     }
     this.taskService.deleteTask(id).subscribe({

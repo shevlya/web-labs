@@ -1,6 +1,8 @@
+@import '../../../styles/variables';
+
 .list-wrapper {
   min-height: 100vh;
-  background: #faf5ff;
+  background: $primary-50;
 }
 
 .list-header {
@@ -8,151 +10,57 @@
   top: 0;
   z-index: 10;
   background: white;
-  border-bottom: 1px solid #ede9fe;
-  padding: 0.875rem 2rem;
+  border-bottom: 1px solid $primary-100;
+  padding: $spacing-md $spacing-2xl;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  box-shadow: 0 2px 8px rgba(109, 40, 217, 0.07);
+  gap: $spacing-lg;
+  box-shadow: $shadow-sm;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $spacing-md;
 
   .logo-mark {
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, #7c3aed, #a78bfa);
-    border-radius: 0.5rem;
+    background: linear-gradient(135deg, $primary-500, $primary-400);
+    border-radius: $border-radius-sm;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: $font-size-2xl;
     flex-shrink: 0;
   }
 
   h1 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: $font-size-3xl;
     font-weight: 700;
-    color: #3b0764;
+    color: $primary-900;
   }
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $spacing-md;
   flex-shrink: 0;
-}
-
-.btn-create {
-  padding: 0.5rem 1.25rem;
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
-  color: white;
-  border: none;
-  border-radius: 0.625rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
-  }
-}
-
-.btn-logout {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  color: #7c3aed;
-  border: 2px solid #ede9fe;
-  border-radius: 0.625rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-
-  &:hover {
-    border-color: #7c3aed;
-    background: #faf5ff;
-  }
 }
 
 .list-content {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: $spacing-2xl;
 }
 
 .tasks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-}
-
-.state-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 5rem 2rem;
-  gap: 1rem;
-  color: #7c3aed;
-  text-align: center;
-
-  p {
-    margin: 0;
-    font-size: 1rem;
-  }
-
-  &.empty {
-    color: #a78bfa;
-  }
-
-  .empty-icon {
-    font-size: 3.5rem;
-  }
-}
-
-.error-text {
-  color: #dc2626;
-}
-
-.btn-retry {
-  padding: 0.5rem 1.5rem;
-  background: #ede9fe;
-  color: #6d28d9;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover {
-    background: #ddd6fe;
-  }
-}
-
-.spinner {
-  width: 44px;
-  height: 44px;
-  border: 3px solid #ede9fe;
-  border-top-color: #7c3aed;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  gap: $spacing-lg;
 }

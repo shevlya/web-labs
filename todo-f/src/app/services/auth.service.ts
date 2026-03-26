@@ -49,35 +49,26 @@ export class AuthService {
     if (!token) return null;
     try {
       const base64url = token.split('.')[0];
-
       // Конвертируем base64url → base64
       let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-
       // Восстанавливаем паддинг
       while (base64.length % 4 !== 0) {
         base64 += '=';
       }
-
       // Декодируем base64 в бинарную строку
       const binaryString = atob(base64);
-
       // Преобразуем бинарную строку в массив байтов
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
-
       // Декодируем байты в UTF-8 строку
       const utf8String = new TextDecoder('utf-8').decode(bytes);
-
       // Парсим JSON
       const payload = JSON.parse(utf8String);
-
       //console.log('JWT payload:', payload);
-
       const id = payload.userId ?? payload.id ?? payload.sub;
       return id != null ? Number(id) : null;
-
     } catch (e) {
       console.error('Ошибка декодирования токена:', e);
       return null;

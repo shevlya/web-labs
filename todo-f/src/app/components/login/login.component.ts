@@ -17,6 +17,14 @@ export class LoginComponent {
   errorMessage = '';
   isLoading = false;
 
+  get usernameControl() {
+    return this.loginForm.get('username');
+  }
+
+  get passwordControl() {
+    return this.loginForm.get('password');
+  }
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,

@@ -1,0 +1,30 @@
+@import 'variables';
+@import 'mixins';
+
+.field-group {
+  @include field-group-base;
+
+  input,
+  select {
+    @include input-base;
+  }
+
+  select {
+    cursor: pointer;
+  }
+}
+
+.field-error {
+  @include field-error;
+}
+
+.error-banner {
+  @include error-banner;
+}
+
+.form-actions {
+  display: flex;
+  gap: $spacing-sm;
+  justify-content: flex-end;
+  padding-top: $spacing-sm;
+}

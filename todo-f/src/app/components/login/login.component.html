@@ -10,9 +10,9 @@
       <div class="field-group">
         <label for="username">Логин</label>
         <input id="username" type="text" formControlName="username" placeholder="Введите логин" autocomplete="username"
-               [class.invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+               [class.invalid]="usernameControl?.invalid && usernameControl?.touched"
         />
-        @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+        @if (usernameControl?.invalid && usernameControl?.touched) {
           <span class="field-error">Логин обязателен</span>
         }
       </div>
@@ -21,8 +21,8 @@
         <label for="password">Пароль</label>
         <input id="password" type="password" formControlName="password" placeholder="Введите пароль"
                autocomplete="current-password"
-               [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"/>
-        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+               [class.invalid]="passwordControl?.invalid && passwordControl?.touched"/>
+        @if (passwordControl?.invalid && passwordControl?.touched) {
           <span class="field-error">Пароль обязателен</span>
         }
       </div>

@@ -1,105 +1,30 @@
-.task-card {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.25rem 1.5rem;
-  box-shadow: 0 2px 8px rgba(109, 40, 217, 0.07);
-  border: 1px solid #ede9fe;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(109, 40, 217, 0.14);
-  }
-}
+@import '../../../styles/variables';
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: $spacing-sm;
   flex-wrap: wrap;
 }
 
-.status-badge {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-
-  &.status-open {
-    background: #dbeafe;
-    color: #1d4ed8;
-  }
-
-  &.status-in_progress {
-    background: #fef3c7;
-    color: #b45309;
-  }
-
-  &.status-done {
-    background: #d1fae5;
-    color: #065f46;
-  }
-
-  &.status-closed {
-    background: #f3f4f6;
-    color: #4b5563;
-  }
-}
-
 .created-at {
-  font-size: 0.78rem;
-  color: #a78bfa;
+  font-size: $font-size-sm;
+  color: $primary-400;
   white-space: nowrap;
 }
 
 .task-title {
   margin: 0;
-  font-size: 1rem;
+  font-size: $font-size-xl;
   font-weight: 600;
-  color: #3b0764;
+  color: $primary-900;
   line-height: 1.45;
   word-break: break-word;
 }
 
 .card-actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 0.25rem;
-}
-
-.btn-edit {
-  padding: 0.4rem 1rem;
-  background: #ede9fe;
-  color: #6d28d9;
-  border-radius: 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.15;
-
-  &:hover {
-    background: #ddd6fe;
-  }
-}
-
-.btn-delete {
-  padding: 0.4rem 1rem;
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-  border-radius: 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover {
-    background: #fee2e2;
-  }
+  gap: $spacing-sm;
+  margin-top: $spacing-xs;
 }

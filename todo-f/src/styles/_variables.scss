@@ -1,0 +1,67 @@
+//Цветовая палитра
+$primary-50: #faf5ff;
+$primary-100: #ede9fe;
+$primary-200: #ddd6fe;
+$primary-300: #c4b5fd;
+$primary-400: #a78bfa;
+$primary-500: #7c3aed;
+$primary-600: #6d28d9;
+$primary-700: #5b21b6;
+$primary-800: #4c1d95;
+$primary-900: #3b0764;
+
+$error-50: #fef2f2;
+$error-100: #fee2e2;
+$error-200: #fecaca;
+$error-500: #ef4444;
+$error-600: #dc2626;
+
+$success-50: #d1fae5;
+$success-600: #065f46;
+
+$info-50: #dbeafe;
+$info-600: #1d4ed8;
+
+$warning-50: #fef3c7;
+$warning-600: #b45309;
+
+$gray-50: #f3f4f6;
+$gray-500: #4b5563;
+
+//Размеры
+$border-radius-sm: 0.5rem;
+$border-radius-md: 0.75rem;
+$border-radius-lg: 1rem;
+$border-radius-xl: 1.5rem;
+
+//Отступы
+$spacing-xs: 0.375rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 0.75rem;
+$spacing-base: 0.875rem;
+$spacing-lg: 1rem;
+$spacing-xl: 1.25rem;
+$spacing-2xl: 1.5rem;
+$spacing-3xl: 2rem;
+$spacing-4xl: 2.5rem;
+
+//Шрифты
+$font-size-xs: 0.72rem;
+$font-size-sm: 0.78rem;
+$font-size-base: 0.875rem;
+$font-size-lg: 0.95rem;
+$font-size-xl: 1rem;
+$font-size-2xl: 1.1rem;
+$font-size-3xl: 1.2rem;
+$font-size-4xl: 1.5rem;
+$font-size-5xl: 1.75rem;
+
+//Тени
+$shadow-sm: 0 2px 8px rgba(109, 40, 217, 0.07);
+$shadow-md: 0 4px 24px rgba(109, 40, 217, 0.1);
+$shadow-lg: 0 8px 24px rgba(109, 40, 217, 0.14);
+$shadow-xl: 0 25px 50px rgba(76, 29, 149, 0.3);
+
+//Переходы
+$transition-fast: 0.15s;
+$transition-normal: 0.2s;

@@ -1,0 +1,76 @@
+@import 'variables';
+@import 'mixins';
+
+.btn-primary {
+  @include button-primary;
+  padding: 0.875rem;
+  margin-top: 0.25rem;
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.btn-save {
+  @include button-primary;
+  padding: 0.7rem 2rem;
+}
+
+.btn-cancel {
+  @include button-secondary;
+  text-decoration: none;
+}
+
+.btn-create {
+  @include button-primary;
+  padding: 0.5rem 1.25rem;
+  font-size: $font-size-base;
+  text-decoration: none;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+  }
+}
+
+.btn-logout {
+  @include button-secondary;
+  padding: 0.5rem 1rem;
+  font-size: $font-size-base;
+}
+
+.btn-edit {
+  padding: 0.4rem 1rem;
+  background: $primary-100;
+  color: $primary-600;
+  border-radius: $border-radius-sm;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $primary-200;
+  }
+}
+
+.btn-delete {
+  @include button-danger;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+}
+
+.btn-retry {
+  padding: 0.5rem 1.5rem;
+  background: $primary-100;
+  color: $primary-600;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $primary-200;
+  }
+}

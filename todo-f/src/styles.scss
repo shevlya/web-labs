@@ -1,4 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+@import '../src/styles/variables';
+@import '../src/styles/mixins';
+@import '../src/styles/forms';
+@import '../src/styles/buttons';
+@import '../src/styles/utilities';
+@import '../src/styles/cards';
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 *,
@@ -13,8 +19,8 @@ body {
   padding: 0;
   font-family: 'Inter', sans-serif;
   font-size: 16px;
-  color: #3b0764;
-  background: #faf5ff;
+  color: $primary-900;
+  background: $primary-50;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

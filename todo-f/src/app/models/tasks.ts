@@ -15,7 +15,7 @@ export enum TaskStatus {
 
 export const TaskStatusLabels: Record<TaskStatus, string> = {
   [TaskStatus.OPEN]: 'Открыта',
-  [TaskStatus.DONE]: 'Завершена',
-  [TaskStatus.IN_PROGRESS]: 'В процессе',
+  [TaskStatus.DONE]: 'Сделана',
+  [TaskStatus.IN_PROGRESS]: 'В процессе выполнения',
   [TaskStatus.CLOSED]: 'Закрыта'
 }

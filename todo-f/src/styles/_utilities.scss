@@ -1,0 +1,28 @@
+@import 'variables';
+@import 'mixins';
+
+.spinner {
+  @include spinner;
+}
+
+.loading-state {
+  @include state-center;
+  padding: 3rem;
+  color: $primary-500;
+}
+
+.state-center {
+  @include state-center;
+
+  &.empty {
+    color: $primary-400;
+  }
+
+  .empty-icon {
+    font-size: 3.5rem;
+  }
+}
+
+.error-text {
+  color: $error-600;
+}
