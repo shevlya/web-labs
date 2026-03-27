@@ -19,6 +19,7 @@ export class TaskListComponent {
   tasks: Task[] = [];
   isLoading = true;
   errorMessage = '';
+  successMessage = '';
 
   constructor(
     private taskService: TaskService,
@@ -53,15 +54,17 @@ export class TaskListComponent {
     this.taskService.deleteTask(id).subscribe({
       next: () => {
         this.tasks = this.tasks.filter(t => t.id !== id);
+        this.setSuccess('Задача успешно удалена');
+        setTimeout(() => this.successMessage = '', 2000);
       },
       error: (err: HttpErrorResponse) => {
         if (err.status === 403) {
-          alert(ERROR_MESSAGES.TASK.DELETE_FORBIDDEN);
+          this.setError(ERROR_MESSAGES.TASK.DELETE_FORBIDDEN);
         } else if (err.status === 404) {
-          alert(ERROR_MESSAGES.TASK.NOT_FOUND);
+          this.setError(ERROR_MESSAGES.TASK.NOT_FOUND);
         } else {
           const msg = err.error?.message ?? ERROR_MESSAGES.TASK.DELETE_FAILED;
-          alert(msg); 
+          this.setError(msg); 
         }
       }
     });
@@ -73,11 +76,21 @@ export class TaskListComponent {
 
   private setLoading(loading: boolean): void {
     this.isLoading = loading;
-    if (loading) this.errorMessage = '';
+    if (loading) {
+      this.errorMessage = '';
+      this.successMessage = '';
+    }
   }
 
   private setError(message: string): void {
     this.errorMessage = message;
+    this.successMessage = '';
+    this.isLoading = false;
+  }
+
+  private setSuccess(message: string): void {
+    this.successMessage = message;
+    this.errorMessage = '';
     this.isLoading = false;
   }
 }

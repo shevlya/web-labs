@@ -12,10 +12,44 @@
 }
 
 .state-center {
-  @include state-center;
+  @include flex-center;
+  flex-direction: column;
+  padding: 5rem 2rem;
+  gap: $spacing-2xl;
+  color: $primary-500;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: $font-size-xl;
+  }
 
   &.empty {
     color: $primary-400;
+  }
+
+  &.success {
+    color: $success-600;
+    
+    .success-text {
+      color: $success-600;
+      font-weight: 600;
+      font-size: $font-size-2xl;
+    }
+  }
+
+  .empty-image {
+    width: 400px;
+    height: 400px;
+    object-fit: contain;
+    margin-bottom: $spacing-xl;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+    transition: transform $transition-normal;
+
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 
   .empty-icon {
@@ -25,4 +59,6 @@
 
 .error-text {
   color: $error-600;
+  font-weight: 600;
+  font-size: $font-size-2xl;
 }

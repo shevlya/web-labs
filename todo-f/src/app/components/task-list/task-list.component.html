@@ -1,7 +1,9 @@
 <div class="list-wrapper">
   <header class="list-header">
     <div class="header-left">
-      <div class="logo-mark">-</div>
+      <div class="logo-mark">
+        <img src="../../../assets/star.ico" alt="Logo"/>
+      </div>
       <h1>Мои задачи</h1>
     </div>
     <div class="header-right">
@@ -18,12 +20,20 @@
       </div>
     } @else if (errorMessage) {
       <div class="state-center">
+        @if (errorMessage.includes('Только администратор')) {
+          <img src="../../../assets/deletePhoto.jpg" alt="Нет доступа" class="empty-image"/>
+        }
         <p class="error-text">{{ errorMessage }}</p>
         <button class="btn-retry" (click)="loadTasks()">Повторить</button>
       </div>
+    } @else if (successMessage) {
+      <div class="state-center success">
+        <img src="../../../assets/lust.jpg" alt="Успешно" class="empty-image"/>
+        <p class="success-text">{{ successMessage }}</p>
+      </div>
     } @else if (tasks.length === 0) {
       <div class="state-center empty">
-        <div class="empty-icon">📋</div>
+        <img src="../../../assets/taskD.jpg" alt="Задач нет" class="empty-image"/>
         <p>Задач пока нет</p>
         <a routerLink="/tasks/new" class="btn-create">Создать первую задачу</a>
       </div>
