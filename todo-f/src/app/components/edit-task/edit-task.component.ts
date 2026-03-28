@@ -4,9 +4,9 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {TaskStatus, TaskStatusLabels} from '../../models/tasks';
 import {TaskService} from '../../services/task.service';
-import { APP_CONSTANTS } from '../../constants/app';
-import { ERROR_MESSAGES } from '../../constants/errors';
-import { HttpErrorResponse } from '@angular/common/http';
+import {APP_CONSTANTS} from '../../constants/app';
+import {ERROR_MESSAGES} from '../../constants/errors';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-edit-task',
@@ -25,7 +25,7 @@ export class EditTaskComponent {
 
   readonly taskStatuses = Object.values(TaskStatus);
   readonly TaskStatusLabels = TaskStatusLabels;
-  
+
   readonly titleMaxLength = APP_CONSTANTS.VALIDATION.TITLE_MAX_LENGTH;
 
   get titleControl() {

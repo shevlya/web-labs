@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {LoginRequest, TokenResponse, UserInfo} from '../models/auth';
 import {Observable, tap} from 'rxjs';
-import { ERROR_MESSAGES } from '../constants/errors';
+import {ERROR_MESSAGES} from '../constants/errors';
 
 @Injectable({
   providedIn: 'root'

@@ -4,7 +4,7 @@ import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {CommonModule} from '@angular/common';
-import { ERROR_MESSAGES } from '../../constants/errors';
+import {ERROR_MESSAGES} from '../../constants/errors';
 
 @Component({
   selector: 'app-login',

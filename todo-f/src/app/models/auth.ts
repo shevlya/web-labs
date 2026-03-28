@@ -12,8 +12,3 @@ export interface UserInfo {
   username: string;
   roles: string[];
 }
-
-export interface RegisterRequest {
-  username: string;
-  password: string;
-}

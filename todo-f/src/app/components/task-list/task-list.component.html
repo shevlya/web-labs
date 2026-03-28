@@ -44,5 +44,8 @@
         }
       </div>
     }
+    <app-dialog-frame [isVisible]="showDeleteConfirm" title="Удаление задачи"
+                      message="Вы уверены, что хотите удалить эту задачу? Это действие нельзя отменить."
+                      (confirmed)="confirmDelete()" (cancelled)="cancelDelete()"></app-dialog-frame>
   </main>
 </div>

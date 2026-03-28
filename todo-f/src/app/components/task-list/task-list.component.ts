@@ -5,13 +5,15 @@ import {TaskCardComponent} from '../task-card/task-card.component';
 import {Task} from '../../models/tasks';
 import {TaskService} from '../../services/task.service';
 import {AuthService} from '../../services/auth.service';
-import { ERROR_MESSAGES } from '../../constants/errors';
-import { HttpErrorResponse } from '@angular/common/http';
+import {ERROR_MESSAGES} from '../../constants/errors';
+import {HttpErrorResponse} from '@angular/common/http';
+import {APP_CONSTANTS} from '../../constants/app';
+import {DialogFrameComponent} from "../../shared/dialog-frame/dialog-frame.component";
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, TaskCardComponent],
+  imports: [CommonModule, RouterLink, TaskCardComponent, DialogFrameComponent],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss'
 })
@@ -20,6 +22,9 @@ export class TaskListComponent {
   isLoading = true;
   errorMessage = '';
   successMessage = '';
+
+  showDeleteConfirm = false;
+  taskToDeleteId: number | null = null;
 
   constructor(
     private taskService: TaskService,
@@ -48,26 +53,40 @@ export class TaskListComponent {
   }
 
   onDeleteTask(id: number): void {
-    if (!confirm('Вы уверены, что хотите удалить эту задачу?')) {
-      return;
-    }
-    this.taskService.deleteTask(id).subscribe({
-      next: () => {
-        this.tasks = this.tasks.filter(t => t.id !== id);
-        this.setSuccess('Задача успешно удалена');
-        setTimeout(() => this.successMessage = '', 2000);
-      },
-      error: (err: HttpErrorResponse) => {
-        if (err.status === 403) {
-          this.setError(ERROR_MESSAGES.TASK.DELETE_FORBIDDEN);
-        } else if (err.status === 404) {
-          this.setError(ERROR_MESSAGES.TASK.NOT_FOUND);
-        } else {
-          const msg = err.error?.message ?? ERROR_MESSAGES.TASK.DELETE_FAILED;
-          this.setError(msg); 
+    this.taskToDeleteId = id;
+    this.showDeleteConfirm = true;
+  }
+
+
+  confirmDelete(): void {
+    if (this.taskToDeleteId) {
+      this.taskService.deleteTask(this.taskToDeleteId).subscribe({
+        next: () => {
+          this.tasks = this.tasks.filter(t => t.id !== this.taskToDeleteId);
+          this.setSuccess('Задача успешно удалена');
+          setTimeout(() => this.successMessage = '', APP_CONSTANTS.TIMEOUT.SUCCESS);
+          this.showDeleteConfirm = false;
+          this.taskToDeleteId = null;
+        },
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 403) {
+            this.setError(ERROR_MESSAGES.TASK.DELETE_FORBIDDEN);
+          } else if (err.status === 404) {
+            this.setError(ERROR_MESSAGES.TASK.NOT_FOUND);
+          } else {
+            const msg = err.error?.message ?? ERROR_MESSAGES.TASK.DELETE_FAILED;
+            this.setError(msg);
+          }
+          this.showDeleteConfirm = false;
+          this.taskToDeleteId = null;
         }
-      }
-    });
+      });
+    }
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm = false;
+    this.taskToDeleteId = null;
   }
 
   logout(): void {

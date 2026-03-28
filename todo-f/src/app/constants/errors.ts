@@ -5,7 +5,7 @@ export const ERROR_MESSAGES = {
     TOKEN_INVALID: 'Ошибка декодирования токена',
     USER_NOT_FOUND: 'Не удалось определить пользователя'
   },
-  
+
   TASK: {
     LOAD_FAILED: 'Не удалось загрузить задачу',
     SAVE_FAILED: 'Ошибка сохранения',

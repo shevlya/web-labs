@@ -1,6 +1,8 @@
+@import '../styles/variables';
+
 .app-container {
   min-height: 100vh;
-  background-color: #faf5ff;
+  background-color: $primary-50;
   font-family: 'Inter', sans-serif;
-  color: #3b0764;
+  color: $primary-900;
 }
