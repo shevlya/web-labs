@@ -21,7 +21,7 @@
     } @else if (errorMessage) {
       <div class="state-center">
         @if (errorMessage.includes('Только администратор')) {
-          <img src="../../../assets/deletePhoto.jpg" alt="Нет доступа" class="empty-image"/>
+          <img src="/assets/deletePhoto.jpg" alt="Нет доступа" class="empty-image"/>
         }
         <p class="error-text">{{ errorMessage }}</p>
         <button class="btn-retry" (click)="loadTasks()">Повторить</button>

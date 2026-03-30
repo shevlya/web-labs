@@ -1,5 +1,6 @@
 package ru.ssau.todo.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +20,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
-    private static final int MAX_ACTIVE_TASKS = 10;
-    private static final int MIN_DELETE_MINUTES = 0;
+    @Value("${task.max-active-tasks:10}")
+    private int maxActiveTasks;
+
+    @Value("${task.min-delete-minutes:0}")
+    private int minDeleteMinutes;
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
@@ -71,8 +75,8 @@ public class TaskService {
     public void deleteTask(Long id) throws TaskNotFoundException, TaskDeletionNotAllowedException {
         Task task = findTaskOrThrow(id);
         long minutes = Duration.between(task.getCreatedAt(), LocalDateTime.now()).toMinutes();
-        if (minutes < MIN_DELETE_MINUTES) {
-            throw new TaskDeletionNotAllowedException(MIN_DELETE_MINUTES);
+        if (minutes < minDeleteMinutes) {
+            throw new TaskDeletionNotAllowedException(minDeleteMinutes);
         }
         taskRepository.delete(task);
     }
@@ -88,7 +92,7 @@ public class TaskService {
 
     private void validateActiveLimit(Long userId, TaskStatus status) throws TooManyActiveTasksException {
         if (!status.isActive()) return;
-        if (countActive(userId) >= MAX_ACTIVE_TASKS) {
+        if (countActive(userId) >= maxActiveTasks) {
             throw new TooManyActiveTasksException(userId);
         }
     }
