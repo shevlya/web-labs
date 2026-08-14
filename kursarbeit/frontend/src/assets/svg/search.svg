@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="search" viewBox="0 0 24 24">
+    <g clip-path="url(#clip0_15_152)">
+      <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-linejoin="round"/>
+      <path d="M19.6464..." fill="currentColor"/>
+    </g>
+    <defs>
+      <clipPath id="clip0_15_152">
+        <rect width="24" height="24"/>
+      </clipPath>
+    </defs>
+  </symbol>
+</svg>

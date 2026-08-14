@@ -1,0 +1,7 @@
+<app-header></app-header>
+<main class="app-container">
+  <router-outlet></router-outlet>
+  @if (showLoginPopup) {
+    <app-login-popup></app-login-popup>
+  }
+</main>

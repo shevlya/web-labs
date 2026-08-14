@@ -1,0 +1,86 @@
+$purple-main: #9c89ff;
+$purple-dark: #7c6af9;
+$purple-light: #f3f0ff;
+
+.event-detail-page {
+  min-height: 100vh;
+  background-color: #f8f7ff;
+
+  .back-link {
+    color: #6c757d;
+    font-weight: 500;
+    transition: 0.2s;
+
+    &:hover {
+      color: $purple-main;
+    }
+  }
+
+  .app-text-purple {
+    color: $purple-dark !important;
+  }
+
+  .text-purple-main {
+    color: $purple-main !important;
+  }
+
+  .bg-purple-light {
+    background-color: $purple-light !important;
+  }
+
+  .app-btn-purple {
+    background-color: $purple-main;
+    border-color: $purple-main;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: $purple-dark;
+      border-color: $purple-dark;
+      color: white;
+    }
+  }
+
+  .btn-outline-purple {
+    color: $purple-main;
+    border-color: $purple-main;
+
+    &:hover {
+      background-color: $purple-main;
+      color: white;
+    }
+  }
+
+  .detail-hero {
+    height: 400px;
+    background: #e9ecef;
+
+    &__placeholder {
+      background: #dee2e6;
+    }
+  }
+
+  .icon-box {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .border-dashed {
+    border: 1px dashed #ced4da !important;
+  }
+
+  .skeleton-hero {
+    height: 400px;
+    background: #eee;
+    border-radius: 1.5rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .detail-hero {
+    height: 260px;
+  }
+}

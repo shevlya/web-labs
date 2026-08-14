@@ -1,0 +1,99 @@
+<div class="my-events-page py-5">
+  <div class="container" style="max-width: 900px;">
+
+    <div class="page-header mb-4">
+      <h1 class="fw-bold h2 mb-1 text-dark">Мои мероприятия</h1>
+      <p class="text-muted">История ваших регистраций на мероприятия</p>
+    </div>
+
+    <div class="filters-scroll-container mb-4">
+      <div class="filters-row d-flex gap-2 pb-2">
+        @for (f of [
+          {id: 'ALL', label: 'Все'},
+          {id: 'REGISTERED', label: 'Записан'},
+          {id: 'WAITLISTED', label: 'Ожидание'},
+          {id: 'ATTENDED', label: 'Прошедшие'},
+          {id: 'CANCELLED', label: 'Отменённые'}
+        ]; track f.id) {
+          <button class="filter-btn d-flex align-items-center gap-2"
+                  [class.active]="selectedStatusFilter() === f.id"
+                  (click)="setFilter(f.id)">
+            {{ f.label }}
+            @if (getCounts(f.id) > 0) {
+              <span class="count-badge">{{ getCounts(f.id) }}</span>
+            }
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary-custom" role="status"></div>
+        <p class="mt-2 text-muted">Загрузка ваших записей...</p>
+      </div>
+    } @else if (error()) {
+      <div class="alert alert-danger rounded-4 shadow-sm border-0">{{ error() }}</div>
+    } @else {
+
+      <div class="events-list d-flex flex-column gap-3">
+        @for (part of filteredParticipations(); track part.eventId) {
+          <div class="event-card shadow-sm border-0 rounded-4 overflow-hidden bg-white">
+            <div class="p-3 p-md-4">
+              <div class="row align-items-center g-3">
+
+                <div class="col">
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="status-pill" [ngClass]="getStatusClass(part.participationStatus)">
+                      {{ getStatusText(part.participationStatus) }}
+                    </span>
+                  </div>
+                  <h3 class="h5 fw-bold mb-2 text-dark">{{ part.eventName }}</h3>
+                  <div class="small text-muted d-flex gap-3">
+                    <span><i class="bi bi-calendar-check me-1"></i> {{ formatDate(part.registrationDate) }}</span>
+                  </div>
+                </div>
+
+                <div class="col-auto">
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-light rounded-pill px-3 shadow-sm border fw-bold btn-sm"
+                            (click)="viewEvent(part.eventId)">
+                      Детали
+                    </button>
+
+                    @if (part.participationStatus === 'REGISTERED' || part.participationStatus === 'WAITLISTED') {
+                      <button class="btn btn-outline-danger rounded-pill px-3 border-2 fw-bold btn-sm"
+                              (click)="openCancelDialog(part.eventId, part.eventName)"
+                              [disabled]="cancelLoading">
+                        Отменить
+                      </button>
+                    }
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state text-center py-5">
+            <div class="icon-circle mb-3 mx-auto">
+              <i class="bi bi-calendar-x text-muted" style="font-size: 2.5rem;"></i>
+            </div>
+            <h4 class="fw-bold text-dark">Пусто</h4>
+            <p class="text-muted">У вас пока нет записей в этой категории</p>
+            <a routerLink="/events" class="btn btn-primary-custom rounded-pill px-4 fw-bold mt-2">Найти мероприятия</a>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+@if (showCancelDialog) {
+  <app-confirmation-dialog
+    title="Отмена записи"
+    [message]="cancelMessage"
+    (confirm)="confirmCancel()"
+    (cancel)="closeCancelDialog()">
+  </app-confirmation-dialog>
+}

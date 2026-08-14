@@ -1,0 +1,90 @@
+$purple-main: #9c89ff;
+$purple-dark: #7c6af9;
+$purple-light: #f3f0ff;
+
+.manage-events-page {
+  background-color: #f8f7ff;
+  min-height: 100vh;
+
+  .text-primary-custom {
+    color: $purple-main;
+  }
+
+  .nav-link {
+    color: #666;
+    background: #fff;
+    transition: all 0.25s ease;
+    border: 1px solid transparent !important;
+
+    &:hover {
+      border-color: $purple-light !important;
+      color: $purple-main;
+      background: $purple-light;
+    }
+
+    &.active-tab {
+      background-color: $purple-main !important;
+      border-color: $purple-main !important;
+      color: white !important;
+      box-shadow: 0 4px 15px rgba($purple-main, 0.3);
+
+      .badge {
+        background: rgba(white, 0.25);
+        color: white;
+      }
+    }
+
+    .badge {
+      background: #eee;
+      color: #666;
+      transition: inherit;
+    }
+  }
+
+  .btn-primary {
+    background-color: $purple-main;
+    border-color: $purple-main;
+
+    &:hover, &:focus {
+      background-color: $purple-dark;
+      border-color: $purple-dark;
+      box-shadow: 0 4px 12px rgba($purple-dark, 0.2);
+    }
+
+    &:disabled {
+      background-color: #ccc;
+      border-color: #ccc;
+    }
+  }
+
+  .btn-outline-primary {
+    color: $purple-main;
+    border-color: $purple-main;
+
+    &:hover {
+      background-color: $purple-main;
+      border-color: $purple-main;
+      color: white;
+    }
+  }
+
+  .event-item {
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07) !important;
+    }
+  }
+
+  .placeholder {
+    background-color: #e9ecef;
+  }
+
+  @media (min-width: 992px) {
+    .border-start-lg {
+      border-left: 1px solid #f0f0f0;
+    }
+  }
+}

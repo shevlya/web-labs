@@ -1,0 +1,79 @@
+<header class="site-header">
+  <div class="container">
+    <div class="header-content">
+
+      <a routerLink="/" class="logo">
+        <img src="assets/images/log.png" alt="Досуг" class="logo-img">
+      </a>
+
+      <button class="mobile-menu-btn"
+              [class.active]="isMobileMenuOpen"
+              (click)="toggleMobileMenu()"
+              aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="main-nav" [class.active]="isMobileMenuOpen">
+        <button class="close-menu-btn" (click)="closeMobileMenu()" aria-label="Закрыть">×</button>
+        <ul class="m-0 p-0 d-flex align-items-center">
+          <li><a routerLink="/info-center" (click)="closeMobileMenu()">Справочный уголок</a></li>
+          <li><a routerLink="/events" (click)="closeMobileMenu()">Мероприятия</a></li>
+        </ul>
+      </nav>
+
+      @if (isMobileMenuOpen) {
+        <div class="menu-overlay" (click)="closeMobileMenu()"></div>
+      }
+
+      <div class="header-actions">
+        @if (!isLoggedIn) {
+          <button class="btn-pastel auth-btn" (click)="openLogin()">
+            <i class="bi bi-person"></i>
+            Войти
+          </button>
+        } @else {
+          <div class="user-profile" (click)="toggleProfileMenu()">
+            <div class="user-avatar">
+              <img [src]="userAvatar" (error)="userAvatar = defaultAvatar" alt="Аватар">
+            </div>
+            <span class="user-name">{{ userName }}</span>
+
+            @if (isProfileMenuOpen) {
+              <div class="profile-menu">
+                <button class="profile-menu-item" (click)="openProfile()">Мой профиль</button>
+                <button class="profile-menu-item" (click)="openMyEvents()">Мои мероприятия</button>
+
+                @if (isOrganizer || isAdmin) {
+                  <ng-container *ngTemplateOutlet="organizerButtons"></ng-container>
+                }
+
+                @if (isAdmin) {
+                  <div class="profile-menu-divider"></div>
+                  <button class="profile-menu-item profile-menu-item--admin" (click)="openAdminPanel()">
+                    <i class="bi bi-card-list"></i>
+                    Панель администратора
+                  </button>
+                }
+
+                <div class="profile-menu-divider"></div>
+                <button class="profile-menu-item profile-menu-item--logout" (click)="logout()">Выйти</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</header>
+
+<ng-template #organizerButtons>
+  <div class="profile-menu-divider"></div>
+  <button class="profile-menu-item profile-menu-item--organizer" (click)="openCreateEvent()">
+    <i class="bi bi-plus-lg"></i>
+    Создать мероприятие
+  </button>
+  <button class="profile-menu-item profile-menu-item--organizer" (click)="openManageEvents()">
+    <i class="bi bi-calendar-check"></i>
+    Управление мероприятиями
+  </button>
+</ng-template>

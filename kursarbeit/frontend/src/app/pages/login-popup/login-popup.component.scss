@@ -1,0 +1,107 @@
+$purple-main: #9c89ff;
+$purple-dark: #7c6af9;
+$purple-light: #f3f0ff;
+
+.custom-close-btn {
+  background-color: white !important;
+  opacity: 0.8;
+  border-radius: 50%;
+  padding: 0.5rem;
+  background-size: 0.6rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+  }
+}
+
+.text-purple-dark {
+  color: $purple-dark;
+}
+
+.bg-purple-lighter {
+  background-color: $purple-light;
+}
+
+.banner-box {
+  height: 160px;
+  @media (max-width: 576px) {
+    height: 120px;
+  }
+}
+
+.banner-img-wrapper {
+  border: 1px solid rgba(124, 106, 249, 0.2);
+}
+
+.btn-toggle-auth {
+  color: $purple-main !important;
+  vertical-align: baseline;
+
+  &:hover {
+    color: $purple-dark !important;
+  }
+}
+
+.modal-content {
+  animation: modalSlide 0.3s ease-out;
+}
+
+@keyframes modalSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-control {
+  border: 2px solid $purple-light;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+
+  &:focus {
+    border-color: $purple-main;
+    box-shadow: 0 0 0 0.25rem rgba(156, 137, 255, 0.15);
+  }
+
+  &.is-invalid {
+    border-color: #ff4757;
+  }
+}
+
+.form-check-input:checked {
+  background-color: $purple-main;
+  border-color: $purple-main;
+}
+
+.btn-purple-main {
+  background-color: $purple-main;
+  color: white;
+  border: none;
+
+  &:hover:not(:disabled) {
+    background-color: $purple-dark;
+    color: white;
+    transform: translateY(-1px);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

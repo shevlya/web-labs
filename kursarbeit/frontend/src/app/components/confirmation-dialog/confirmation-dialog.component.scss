@@ -1,0 +1,93 @@
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.dialog-container {
+  max-width: 400px;
+  width: 90%;
+}
+
+.dialog-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--pastel-purple-lighter, #f3f0ff);
+
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+
+    &:hover {
+      color: #333;
+    }
+  }
+}
+
+.dialog-body {
+  padding: 20px;
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-dark, #333);
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--pastel-purple-lighter, #f3f0ff);
+  justify-content: flex-end;
+
+  button {
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel {
+    background: white;
+    border: 2px solid var(--pastel-purple-light, #e6dfff);
+    color: var(--text-dark, #333);
+
+    &:hover {
+      border-color: var(--pastel-purple-primary, #9c89ff);
+    }
+  }
+
+  .btn-confirm {
+    background: var(--pastel-purple-primary, #9c89ff);
+    border: none;
+    color: white;
+
+    &:hover {
+      background: var(--pastel-purple-dark, #7c6af9);
+    }
+  }
+}

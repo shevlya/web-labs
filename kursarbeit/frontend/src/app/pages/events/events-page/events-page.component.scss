@@ -1,0 +1,88 @@
+$purple-main: #9c89ff;
+$purple-dark: #7c6af9;
+$purple-light: #f3f0ff;
+
+.events-page {
+  background-color: #f8f7ff;
+  min-height: 100vh;
+
+  aside {
+    align-self: flex-start;
+  }
+
+  .app-btn-purple {
+    background-color: $purple-main;
+    color: white;
+    border: none;
+    transition: 0.2s;
+
+    &:hover {
+      background-color: $purple-dark;
+      color: white;
+    }
+  }
+
+  .text-purple-main {
+    color: $purple-main;
+  }
+
+  .app-text-purple {
+    color: $purple-dark;
+  }
+
+  .event-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+    }
+  }
+
+  .text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 3rem;
+  }
+
+  .pagination-purple {
+    .page-link {
+      color: #333;
+      padding: 0.75rem 1rem;
+
+      &:hover {
+        background-color: $purple-light;
+        color: $purple-main;
+      }
+    }
+
+    .page-item.active .page-link {
+      background-color: $purple-main;
+      color: white;
+    }
+  }
+
+  .form-select, .form-control {
+    &:focus {
+      border-color: $purple-main;
+      box-shadow: 0 0 0 0.25rem rgba(156, 137, 255, 0.25);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .placeholder {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e4e4e4 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}

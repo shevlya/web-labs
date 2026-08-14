@@ -1,0 +1,122 @@
+<div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+
+      <button type="button" class="btn-close custom-close-btn position-absolute top-0 end-0 m-3 z-3 shadow-sm"
+              (click)="closePopup()" aria-label="Close"></button>
+
+      <div class="modal-body p-0">
+        <div class="banner-box bg-purple-lighter p-3">
+          <div class="banner-img-wrapper w-100 h-100 overflow-hidden rounded-3">
+            <img src="assets/images/log-small.png" alt="Banner" class="img-fluid w-100 h-100 object-fit-cover">
+          </div>
+        </div>
+
+        <div class="p-4 p-md-5">
+          <div class="text-center mb-4">
+            <h1 class="h4 fw-bold text-purple-dark">{{ showRegisterForm ? 'Создать аккаунт' : 'Добро пожаловать' }}</h1>
+            <p
+              class="text-muted small mb-0">{{ showRegisterForm ? 'Заполните форму для регистрации' : 'Войдите в свой аккаунт' }}</p>
+          </div>
+
+          <form *ngIf="!showRegisterForm" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">Email</label>
+              <input type="email" formControlName="email" class="form-control rounded-3"
+                     [class.is-invalid]="showLoginEmailError()" placeholder="name@example.com">
+              <div class="invalid-feedback">Введите корректный email</div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold small">Пароль</label>
+              <input type="password" formControlName="password" class="form-control rounded-3"
+                     [class.is-invalid]="showLoginPasswordError()" placeholder="••••••••">
+              <div class="invalid-feedback">Пароль обязателен</div>
+            </div>
+
+            <button type="submit" class="btn btn-purple-main w-100 py-2 fw-bold rounded-3 shadow-sm mb-3"
+                    [disabled]="isLoading">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isLoading ? 'Вход...' : 'Войти' }}
+            </button>
+          </form>
+
+          <form *ngIf="showRegisterForm" [formGroup]="registerForm" (ngSubmit)="onRegister()">
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-semibold small">Имя</label>
+                <input type="text" formControlName="firstName" class="form-control rounded-3"
+                       [class.is-invalid]="showRegisterFieldError('firstName')"
+                       placeholder="Иван" title="Разрешены только буквы">
+                <div class="invalid-feedback small" *ngIf="registerForm.get('firstName')?.errors?.['pattern']">
+                  Только буквы
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold small">Фамилия</label>
+                <input type="text" formControlName="lastName" class="form-control rounded-3"
+                       [class.is-invalid]="showRegisterFieldError('lastName')"
+                       placeholder="Иванов" title="Разрешены только буквы">
+                <div class="invalid-feedback small" *ngIf="registerForm.get('lastName')?.errors?.['pattern']">
+                  Только буквы
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">Email</label>
+              <input type="email" formControlName="email" class="form-control rounded-3"
+                     [class.is-invalid]="showRegisterFieldError('email')" placeholder="example@mail.ru">
+              <div class="text-muted" style="font-size: 0.7rem;">Мы отправим подтверждение на этот адрес</div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-semibold small">Пароль</label>
+                <input type="password" formControlName="password" class="form-control rounded-3"
+                       [class.is-invalid]="showRegisterFieldError('password')" placeholder="Мин. 6">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold small">Повтор</label>
+                <input type="password" formControlName="confirmPassword" class="form-control rounded-3"
+                       [class.is-invalid]="showRegisterFieldError('confirmPassword')" placeholder="Повторите пароль">
+              </div>
+            </div>
+
+            <div class="form-check mb-2">
+              <input class="form-check-input shadow-none" type="checkbox" formControlName="hasDisability" id="disCheck">
+              <label class="form-check-label small" for="disCheck">Есть ограничения по здоровью (ОВЗ)</label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input shadow-none" type="checkbox" formControlName="wantsOrganizer" id="orgCheck"
+                     (change)="onWantsOrganizerChange()">
+              <label class="form-check-label small fw-bold" for="orgCheck">Хочу стать организатором</label>
+            </div>
+
+            <div class="mb-4 animate-fade-in" *ngIf="registerForm.get('wantsOrganizer')?.value">
+              <textarea formControlName="organizerRequestText" class="form-control rounded-3 bg-light small"
+                        rows="2" placeholder="Опишите ваши идеи для мероприятий..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-purple-main w-100 py-2 fw-bold rounded-3 shadow-sm mb-3"
+                    [disabled]="isLoading">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span> Зарегистрироваться
+            </button>
+          </form>
+
+          <div class="alert alert-danger py-2 small text-center rounded-3 mb-3" *ngIf="serverError">{{ serverError }}
+          </div>
+
+          <div class="d-flex align-items-center justify-content-center small mt-2">
+            <span class="text-muted">{{ showRegisterForm ? 'Уже есть аккаунт?' : 'Еще нет аккаунта?' }}</span>
+            <button class="btn btn-link btn-sm fw-bold text-decoration-none shadow-none p-0 ms-1 btn-toggle-auth"
+                    (click)="toggleForm()">
+              {{ showRegisterForm ? 'Войти' : 'Зарегистрироваться' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,104 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 20px;
+  width: 95%;
+  max-width: 900px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--pastel-purple-lighter);
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  h4 {
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+    color: var(--pastel-purple-primary);
+  }
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.2rem;
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--text-dark);
+  }
+}
+
+.modal-body {
+  padding: 0 24px;
+  overflow-y: auto;
+}
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &.status-REGISTERED {
+    background: #e8f5e9;
+    color: #2ecc71;
+  }
+
+  &.status-ATTENDED {
+    background: #e3f2fd;
+    color: #2196f3;
+  }
+
+  &.status-CANCELLED {
+    background: #fff5f5;
+    color: #ff4757;
+  }
+
+  &.status-WAITLISTED {
+    background: #fff9db;
+    color: #f08c00;
+  }
+
+  &.status-REJECTED_BY_ORGANIZER {
+    background: #fff0f6;
+    color: #d6336c;
+  }
+}
+
+.status-select-custom {
+  width: auto;
+  border-color: var(--pastel-purple-light);
+
+  &:focus {
+    border-color: var(--pastel-purple-primary);
+    box-shadow: none;
+  }
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--pastel-purple-lighter);
+}

@@ -1,0 +1,177 @@
+<div class="create-event-page">
+  <div class="container py-4">
+    <a routerLink="/events/manage" class="back-link mb-3">
+      <i class="bi bi-arrow-left"></i> Мои мероприятия
+    </a>
+
+    <div class="page-header mb-4">
+      <h1 class="h2 fw-bold">Создать мероприятие</h1>
+      <p class="text-muted">Заполните форму — мероприятие появится после проверки администратором</p>
+    </div>
+
+    @if (submitSuccess) {
+      <div class="alert alert-success d-flex align-items-center mb-4 rounded-4 border-0 shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <div class="fw-medium">Мероприятие создано и отправлено на проверку!</div>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="event-form">
+
+      <div class="form-section shadow-sm p-4 bg-white rounded-4 mb-4">
+        <h2 class="form-section-title h5 fw-bold mb-4">Основная информация</h2>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-muted small">Название мероприятия *</label>
+          <input type="text" formControlName="eventName" class="form-control"
+                 [class.is-invalid]="fieldError('eventName')" placeholder="Например: Книжный клуб">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-muted small">Описание мероприятия</label>
+          <textarea formControlName="eventDescription" class="form-control" rows="3"
+                    placeholder="Расскажите подробнее..."></textarea>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted small">Категория *</label>
+            <select formControlName="categoryId" class="form-select" [class.is-invalid]="fieldError('categoryId')">
+              <option [ngValue]="null" disabled>Выберите категорию</option>
+              @for (cat of categories; track cat.idEventCategory) {
+                <option [value]="cat.idEventCategory">{{ cat.eventCategoryName }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted small">Ссылка на обложку (URL)</label>
+            <input type="url" formControlName="imageUrl" class="form-control"
+                   placeholder="https://example.com/image.jpg">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section shadow-sm p-4 bg-white rounded-4 mb-4">
+        <h2 class="form-section-title h5 fw-bold mb-4">Дата, время и стоимость</h2>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted small">Дата *</label>
+            <input type="date" formControlName="eventDate" class="form-control"
+                   [class.is-invalid]="fieldError('eventDate')" [min]="today">
+
+            @if (form.get('eventDate')?.value && !form.get('eventDate')?.errors?.['pastDate']) {
+              <div class="form-text text-purple-main mt-1 fw-medium small">
+                <i class="bi bi-calendar-check me-1"></i>
+                {{ form.get('eventDate')?.value | date:'fullDate' }}
+              </div>
+            }
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted small">Начало *</label>
+            <input type="time" formControlName="startTime" class="form-control"
+                   [class.is-invalid]="fieldError('startTime')">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted small">Окончание *</label>
+            <input type="time" formControlName="endTime" class="form-control"
+                   [class.is-invalid]="fieldError('endTime')">
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted small">Формат *</label>
+            <select formControlName="format" class="form-select">
+              <option value="OFFLINE">Очный</option>
+              <option value="ONLINE">Дистанционный</option>
+              <option value="HYBRID">Гибридный</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted small">Цена (₽) *</label>
+            <input type="number" formControlName="price" class="form-control" min="0">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted small">Мест (пусто = без лимита)</label>
+            <input type="number" formControlName="maxParticipants" class="form-control" min="1">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section shadow-sm p-4 bg-white rounded-4 mb-4">
+        <h2 class="form-section-title h5 fw-bold mb-4">Место проведения</h2>
+
+        <div class="btn-group w-100 mb-4" role="group">
+          <input type="radio" class="btn-check" id="phys" formControlName="placeType" value="PHYSICAL">
+          <label class="btn btn-outline-purple py-2 fw-bold" for="phys">
+            <i class="bi bi-geo-alt me-2"></i>Офлайн площадка
+          </label>
+
+          <input type="radio" class="btn-check" id="onl" formControlName="placeType" value="ONLINE">
+          <label class="btn btn-outline-purple py-2 fw-bold" for="onl">
+            <i class="bi bi-globe me-2"></i>Онлайн встреча
+          </label>
+        </div>
+
+        @if (!isOnline) {
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold text-muted small">Название площадки</label>
+              <input type="text" formControlName="placeName" class="form-control" placeholder="Например: Точка кипения">
+            </div>
+            <div class="col-md-5">
+              <input type="text" formControlName="city" class="form-control" placeholder="Город">
+            </div>
+            <div class="col-md-5">
+              <input type="text" formControlName="street" class="form-control" placeholder="Улица">
+            </div>
+            <div class="col-md-2">
+              <input type="text" formControlName="house" class="form-control" placeholder="Дом">
+            </div>
+            <div class="col-12 mt-3">
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="disabilityAccessible" class="checkbox-input">
+                <span class="checkbox-text fw-medium">Доступная среда (ОВЗ)</span>
+              </label>
+            </div>
+          </div>
+        } @else {
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold text-muted small">Ссылка на конференцию *</label>
+              <input type="url" formControlName="meetingUrl" class="form-control" placeholder="https://zoom.us/j/...">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold text-muted small">Заметки (пароль, инструкции)</label>
+              <input type="text" formControlName="specialNotes" class="form-control">
+            </div>
+            <div class="col-12 mt-2">
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="recording" class="checkbox-input">
+                <span class="checkbox-text fw-medium">Запись будет доступна</span>
+              </label>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (submitError) {
+        <div class="alert alert-danger mb-4 rounded-4 border-0 shadow-sm">{{ submitError }}</div>
+      }
+
+      <div class="d-flex flex-column-reverse flex-md-row justify-content-md-end gap-3 mt-4">
+        <a routerLink="/events/manage" class="btn btn-light px-4 py-2 border rounded-3 fw-bold text-muted">Отмена</a>
+        <button type="submit" class="btn btn-purple-main px-5 py-2 fw-bold rounded-3 shadow-sm" [disabled]="isLoading">
+          @if (isLoading) {
+            <span class="spinner-border spinner-border-sm me-2"></span> Создаём...
+          } @else {
+            Создать мероприятие
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

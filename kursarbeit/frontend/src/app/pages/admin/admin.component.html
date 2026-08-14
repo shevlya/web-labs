@@ -1,0 +1,790 @@
+<div class="d-flex"
+     style="height:100vh; overflow:hidden; background:#f8f7ff; font-family:'Nunito','Segoe UI',sans-serif;">
+
+  <ng-template #iconApprove>
+    <i class="bi bi-check2"></i>
+  </ng-template>
+  <ng-template #iconReject>
+    <i class="bi bi-x-lg"></i>
+  </ng-template>
+  <ng-template #iconView>
+    <i class="bi bi-eye"></i>
+  </ng-template>
+  <ng-template #iconEdit>
+    <i class="bi bi-pen"></i>
+  </ng-template>
+  <ng-template #iconDelete>
+    <i class="bi bi-basket3"></i>
+  </ng-template>
+  <ng-template #iconReview>
+    <i class="bi bi-exclamation-circle"></i>
+  </ng-template>
+
+  <aside class="admin-sidebar d-flex flex-column border-end bg-white" [class.collapsed]="sidebarCollapsed">
+    <div class="d-flex align-items-center gap-2 px-3 border-bottom" style="min-height:60px;">
+      <div class="sidebar-logo rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+           style="width:36px;height:36px;background:#9c89ff;color:white;cursor:pointer;"
+           (click)="sidebarCollapsed = !sidebarCollapsed">
+        <i class="bi bi-ui-checks"></i>
+      </div>
+      <span class="fw-bold text-nowrap overflow-hidden" style="font-size:.95rem;color:#1a1635;"
+            *ngIf="!sidebarCollapsed">Панель управления</span>
+    </div>
+
+    <nav class="d-flex flex-column gap-1 p-2 flex-grow-1 overflow-auto">
+      <button class="nav-item d-flex align-items-center gap-2 border-0 rounded-3 px-2 py-2 text-nowrap w-100"
+              [class.active]="activeTab === 'dashboard'" (click)="setTab('dashboard')">
+        <i class="bi bi-card-list"></i>
+        <span *ngIf="!sidebarCollapsed">Панель администратора</span>
+      </button>
+
+      <button class="nav-item d-flex align-items-center gap-2 border-0 rounded-3 px-2 py-2 text-nowrap w-100"
+              [class.active]="activeTab === 'events'" (click)="setTab('events')">
+        <i class="bi bi-calendar2-event"></i>
+        <span *ngIf="!sidebarCollapsed">Мероприятия</span>
+        <span class="ms-auto badge rounded-pill bg-danger"
+              *ngIf="stats?.pendingEvents && !sidebarCollapsed">{{ stats?.pendingEvents }}</span>
+      </button>
+
+      <button class="nav-item d-flex align-items-center gap-2 border-0 rounded-3 px-2 py-2 text-nowrap w-100"
+              [class.active]="activeTab === 'requests'" (click)="setTab('requests')">
+        <i class="bi bi-envelope-paper"></i>
+        <span *ngIf="!sidebarCollapsed">Заявки организаторов</span>
+        <span class="ms-auto badge rounded-pill bg-danger"
+              *ngIf="stats?.pendingOrganizerRequests && !sidebarCollapsed">{{ stats?.pendingOrganizerRequests }}</span>
+      </button>
+
+      <button class="nav-item d-flex align-items-center gap-2 border-0 rounded-3 px-2 py-2 text-nowrap w-100"
+              [class.active]="activeTab === 'users'" (click)="setTab('users')">
+        <i class="bi bi-person-lines-fill"></i>
+        <span *ngIf="!sidebarCollapsed">Пользователи</span>
+      </button>
+
+      <hr class="my-1 mx-1" style="border-color:#e8e5ff;">
+
+      <button class="nav-item d-flex align-items-center gap-2 border-0 rounded-3 px-2 py-2 text-nowrap w-100"
+              [class.active]="activeTab === 'catalog'" (click)="setTab('catalog')">
+        <i class="bi bi-journal"></i>
+        <span *ngIf="!sidebarCollapsed">Справочники</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="d-flex flex-column flex-grow-1 overflow-hidden">
+    <header class="d-flex align-items-center justify-content-between px-4 bg-white border-bottom"
+            style="min-height:60px;">
+      <h1 class="mb-0 fw-bold" style="font-size:1.1rem;color:#1a1635;">
+        <ng-container [ngSwitch]="activeTab">
+          <span *ngSwitchCase="'dashboard'">Панель администратора</span>
+          <span *ngSwitchCase="'events'">Мероприятия</span>
+          <span *ngSwitchCase="'requests'">Заявки организаторов</span>
+          <span *ngSwitchCase="'users'">Пользователи</span>
+          <span *ngSwitchCase="'catalog'">Справочники</span>
+        </ng-container>
+      </h1>
+      <button class="btn d-flex align-items-center justify-content-center rounded-3 border-0"
+              style="width:36px;height:36px;background:#f0eeff;color:#7c6af9;"
+              (click)="loadAll()" [class.spinning]="loading" title="Обновить">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M23 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="flex-grow-1 overflow-auto p-4">
+
+      <div *ngIf="activeTab === 'dashboard'" class="tab-content">
+
+        <div class="row g-4 mb-4">
+          <div class="col-xl-3 col-md-6">
+            <div class="card border-0 h-100 stat-card stat-card--users">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                     style="width:48px;height:48px;background:#f0eeff;color:#9c89ff;">
+                  <i class="bi bi-person-lines-fill"></i>
+                </div>
+                <div>
+                  <div class="fw-bold"
+                       style="font-size:1.8rem;line-height:1;color:#1a1635;">{{ stats?.totalUsers ?? '—' }}
+                  </div>
+                  <div style="font-size:.8rem;color:#9994b4;font-weight:600;">Всего пользователей</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-md-6">
+            <div class="card border-0 h-100 stat-card stat-card--organizers">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                     style="width:48px;height:48px;background:rgba(34,197,94,.12);color:#22c55e;">
+                  <i class="bi bi-feather"></i>
+                </div>
+                <div>
+                  <div class="fw-bold"
+                       style="font-size:1.8rem;line-height:1;color:#1a1635;">{{ stats?.totalOrganizers ?? '—' }}
+                  </div>
+                  <div style="font-size:.8rem;color:#9994b4;font-weight:600;">Организаторов</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-md-6">
+            <div class="card border-0 h-100 stat-card stat-card--pending" [class.has-alert]="stats?.pendingEvents">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                     style="width:48px;height:48px;background:rgba(249,115,22,.12);color:#f97316;">
+                  <i class="bi bi-calendar2-event"></i>
+                </div>
+                <div>
+                  <div class="fw-bold"
+                       style="font-size:1.8rem;line-height:1;color:#1a1635;">{{ stats?.pendingEvents ?? '—' }}
+                  </div>
+                  <div style="font-size:.8rem;color:#9994b4;font-weight:600;">Мероприятий на проверке</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-md-6">
+            <div class="card border-0 h-100 stat-card stat-card--requests"
+                 [class.has-alert]="stats?.pendingOrganizerRequests">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                     style="width:48px;height:48px;background:rgba(239,68,68,.12);color:#ef4444;">
+                  <i class="bi bi-envelope-paper"></i>
+                </div>
+                <div>
+                  <div class="fw-bold"
+                       style="font-size:1.8rem;line-height:1;color:#1a1635;">{{ stats?.pendingOrganizerRequests ?? '—' }}
+                  </div>
+                  <div style="font-size:.8rem;color:#9994b4;font-weight:600;">Заявок на организатора</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-4 p-3">
+          <div class="section-title mb-3">Быстрые действия</div>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="quick-btn btn d-flex align-items-center gap-2 rounded-3 border-0 fw-bold"
+                    style="background:#f0eeff;color:#7c6af9;font-size:.85rem;padding:10px 16px;"
+                    (click)="setTab('events')">
+              <i class="bi bi-ui-checks"></i>
+              Модерировать мероприятия
+            </button>
+            <button class="quick-btn btn d-flex align-items-center gap-2 rounded-3 border-0 fw-bold"
+                    style="background:#f0eeff;color:#7c6af9;font-size:.85rem;padding:10px 16px;"
+                    (click)="setTab('requests')">
+              <i class="bi bi-search"></i>
+              Рассмотреть заявки
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-1">
+          <div class="col-xl-6">
+            <div class="card border h-100" style="border-color:#e8e5ff!important;">
+              <div class="card-header d-flex align-items-center justify-content-between py-3 px-3"
+                   style="background:#f8f7ff;border-color:#e8e5ff;">
+                <span class="section-title mb-0">Последние заявки организаторов</span>
+                <button class="btn btn-sm border-0 fw-bold" style="color:#9c89ff;font-size:.78rem;"
+                        (click)="setTab('requests')">Все заявки →
+                </button>
+              </div>
+              <div class="recent-list overflow-auto" style="max-height:340px;"
+                   *ngIf="recentRequests.length; else noReqs">
+                <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom recent-row"
+                     style="border-color:rgba(232,229,255,.6)!important;"
+                     *ngFor="let r of recentRequests">
+                  <div
+                    class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0 text-white text-uppercase"
+                    style="width:36px;height:36px;background:#9c89ff;font-size:.9rem;">{{ r.userFio[0] }}
+                  </div>
+                  <div class="flex-grow-1 overflow-hidden">
+                    <div class="fw-bold text-truncate" style="font-size:.87rem;color:#1a1635;">{{ r.userFio }}</div>
+                    <div style="font-size:.76rem;color:#9994b4;">{{ r.userEmail }}</div>
+                    <div
+                      style="font-size:.78rem;color:#4a4566;margin-top:3px;line-height:1.35;">{{ r.requestText | slice:0:70 }}{{ r.requestText.length > 70 ? '…' : '' }}
+                    </div>
+                  </div>
+                  <div class="d-flex flex-column align-items-end gap-1 flex-shrink-0" style="min-width:90px;">
+                    <span class="status-badge"
+                          [attr.data-status]="r.requestStatus">{{ getStatusName(r.requestStatus) }}</span>
+                    <span
+                      style="font-size:.72rem;color:#9994b4;font-weight:600;">{{ r.submittedAt | date:'dd.MM HH:mm' }}</span>
+                  </div>
+                  <div class="d-flex gap-1 align-items-center flex-shrink-0" *ngIf="r.requestStatus === 'PENDING'">
+                    <button class="action-btn action-btn--view" (click)="openViewRequest(r)" title="Просмотреть текст">
+                      <ng-container *ngTemplateOutlet="iconView"></ng-container>
+                    </button>
+                    <button class="action-btn action-btn--approve" (click)="reviewRequest(r.idOrganizerRequest, true)"
+                            title="Одобрить">
+                      <ng-container *ngTemplateOutlet="iconApprove"></ng-container>
+                    </button>
+                    <button class="action-btn action-btn--reject" (click)="reviewRequest(r.idOrganizerRequest, false)"
+                            title="Отклонить">
+                      <ng-container *ngTemplateOutlet="iconReject"></ng-container>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <ng-template #noReqs>
+                <div class="d-flex flex-column align-items-center justify-content-center p-5 text-center"
+                     style="font-size:.85rem;color:#9994b4;font-weight:600;">Нет новых заявок
+                </div>
+              </ng-template>
+            </div>
+          </div>
+
+          <div class="col-xl-6">
+            <div class="card border h-100" style="border-color:#e8e5ff!important;">
+              <div class="card-header d-flex align-items-center justify-content-between py-3 px-3"
+                   style="background:#f8f7ff;border-color:#e8e5ff;">
+                <span class="section-title mb-0">Мероприятия на проверке</span>
+                <button class="btn btn-sm border-0 fw-bold" style="color:#9c89ff;font-size:.78rem;"
+                        (click)="setTab('events')">Все мероприятия →
+                </button>
+              </div>
+              <div class="recent-list overflow-auto" style="max-height:340px;"
+                   *ngIf="recentPendingEvents.length; else noEvs">
+                <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom recent-row"
+                     style="border-color:rgba(232,229,255,.6)!important;"
+                     *ngFor="let e of recentPendingEvents">
+                  <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                       style="width:44px;height:44px;background:#f0eeff;background-size:cover;background-position:center;"
+                       [style.backgroundImage]="e.imageUrl ? 'url(' + e.imageUrl + ')' : 'none'">
+                    <svg *ngIf="!e.imageUrl" width="18" height="18" viewBox="0 0 24 24" fill="none" style="opacity:.4">
+                      <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="flex-grow-1 overflow-hidden">
+                    <div class="fw-bold text-truncate" style="font-size:.87rem;color:#1a1635;">{{ e.eventName }}</div>
+                    <div style="font-size:.76rem;color:#9994b4;">{{ e.organizerFio }}</div>
+                    <div class="d-flex gap-1 flex-wrap mt-1">
+                      <span class="chip">{{ e.eventCategoryName }}</span>
+                      <span class="chip chip--format">{{ getEventFormatLabel(e.eventFormat) }}</span>
+                    </div>
+                  </div>
+                  <div class="d-flex flex-column align-items-end gap-1 flex-shrink-0" style="min-width:90px;">
+                    <span class="verify-badge unverified">Не проверено</span>
+                    <span
+                      style="font-size:.72rem;color:#9994b4;font-weight:600;">{{ e.eventDate | date:'dd.MM.yyyy' }}</span>
+                  </div>
+                  <div class="d-flex gap-1 align-items-center flex-shrink-0">
+                    <button class="action-btn action-btn--approve" (click)="verifyEvent(e.idEvent, true)"
+                            title="Одобрить">
+                      <ng-container *ngTemplateOutlet="iconApprove"></ng-container>
+                    </button>
+                    <button class="action-btn action-btn--reject" (click)="verifyEvent(e.idEvent, false)"
+                            title="Отклонить">
+                      <ng-container *ngTemplateOutlet="iconReject"></ng-container>
+                    </button>
+                    <button class="action-btn action-btn--view" (click)="viewEvent(e.idEvent)" title="Подробнее">
+                      <ng-container *ngTemplateOutlet="iconView"></ng-container>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <ng-template #noEvs>
+                <div class="d-flex flex-column align-items-center justify-content-center p-5 text-center"
+                     style="font-size:.85rem;color:#9994b4;font-weight:600;">Нет мероприятий на проверке
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'events'" class="tab-content">
+        <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+          <div class="filter-tabs d-flex gap-1 bg-white rounded-3 p-1 border" style="border-color:#e8e5ff!important;">
+            <button class="btn rounded-3 fw-bold border-0" style="font-size:.83rem;"
+                    [class.active-filter]="eventFilter === 'pending'" (click)="setEventFilter('pending')">Ожидают
+              проверки
+            </button>
+            <button class="btn rounded-3 fw-bold border-0" style="font-size:.83rem;"
+                    [class.active-filter]="eventFilter === 'changes'" (click)="setEventFilter('changes')">Изменения на
+              модерации
+            </button>
+            <button class="btn rounded-3 fw-bold border-0" style="font-size:.83rem;"
+                    [class.active-filter]="eventFilter === 'all'" (click)="setEventFilter('all')">Все мероприятия
+            </button>
+          </div>
+        </div>
+        <div class="card border-0" *ngIf="!loading; else loadingTpl">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" *ngIf="filteredEvents.length; else emptyTpl">
+              <thead style="background:#f8f7ff;">
+              <tr>
+                <th class="table-th">ID</th>
+                <th class="table-th">Название</th>
+                <th class="table-th">Организатор</th>
+                <th class="table-th">Дата</th>
+                <th class="table-th">Категория</th>
+                <th class="table-th">Статус</th>
+                <th class="table-th">Проверка</th>
+                <th class="table-th">Действия</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let e of filteredEvents" [class.row-pending]="!e.verified">
+                <td class="td-id">#{{ e.idEvent }}</td>
+                <td class="fw-semibold" style="max-width:180px;">{{ e.eventName }}</td>
+                <td>{{ e.organizerFio }}</td>
+                <td>{{ e.eventDate | date:'dd.MM.yyyy' }}</td>
+                <td><span class="chip">{{ e.eventCategoryName }}</span></td>
+                <td><span class="status-badge"
+                          [attr.data-status]="e.eventStatus">{{ getStatusName(e.eventStatus) }}</span></td>
+                <td><span class="verify-badge" [class.verified]="e.verified"
+                          [class.unverified]="!e.verified">{{ e.verified ? 'Одобрено' : 'Не проверено' }}</span></td>
+                <td>
+                  <div class="d-flex gap-1 align-items-center">
+                    <button class="action-btn action-btn--review" *ngIf="e.moderationStatus === 'PENDING'"
+                            (click)="openCompareModal(e.idEvent)" title="Рассмотреть изменения">
+                      <ng-container *ngTemplateOutlet="iconReview"></ng-container>
+                    </button>
+                    <button class="action-btn action-btn--approve" (click)="verifyEvent(e.idEvent, true)"
+                            *ngIf="!e.verified" title="Одобрить">
+                      <ng-container *ngTemplateOutlet="iconApprove"></ng-container>
+                    </button>
+                    <button class="action-btn action-btn--reject" (click)="verifyEvent(e.idEvent, false)"
+                            *ngIf="!e.verified" title="Отклонить">
+                      <ng-container *ngTemplateOutlet="iconReject"></ng-container>
+                    </button>
+                    <button class="action-btn action-btn--view" (click)="viewEvent(e.idEvent)" title="Подробнее">
+                      <ng-container *ngTemplateOutlet="iconView"></ng-container>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'requests'" class="tab-content">
+        <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+          <div class="filter-tabs d-flex gap-1 bg-white rounded-3 p-1 border" style="border-color:#e8e5ff!important;">
+            <button class="btn rounded-3 fw-bold border-0" style="font-size:.83rem;"
+                    [class.active-filter]="requestFilter === 'pending'" (click)="setRequestFilter('pending')">Ожидают
+              решения
+            </button>
+            <button class="btn rounded-3 fw-bold border-0" style="font-size:.83rem;"
+                    [class.active-filter]="requestFilter === 'all'" (click)="setRequestFilter('all')">Все заявки
+            </button>
+          </div>
+        </div>
+        <div class="card border-0" *ngIf="!loading; else loadingTpl">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" *ngIf="filteredRequests.length; else emptyTpl">
+              <thead style="background:#f8f7ff;">
+              <tr>
+                <th class="table-th">ID</th>
+                <th class="table-th">Пользователь</th>
+                <th class="table-th">Email</th>
+                <th class="table-th">Статус</th>
+                <th class="table-th">Дата подачи</th>
+                <th class="table-th">Текст заявки</th>
+                <th class="table-th">Действия</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let r of filteredRequests">
+                <td class="td-id">#{{ r.idOrganizerRequest }}</td>
+                <td>{{ r.userFio }}</td>
+                <td style="color:#4a4566;font-size:.82rem;">{{ r.userEmail }}</td>
+                <td><span class="status-badge"
+                          [attr.data-status]="r.requestStatus">{{ getStatusName(r.requestStatus) }}</span></td>
+                <td>{{ r.submittedAt | date:'dd.MM.yyyy HH:mm' }}</td>
+                <td
+                  style="color:#4a4566;font-size:.82rem;max-width:200px;">{{ r.requestText | slice:0:60 }}{{ r.requestText.length > 60 ? '…' : '' }}
+                </td>
+                <td>
+                  <div class="d-flex gap-1 align-items-center">
+                    <button class="action-btn action-btn--view" (click)="openViewRequest(r)" title="Просмотреть текст">
+                      <ng-container *ngTemplateOutlet="iconView"></ng-container>
+                    </button>
+                    <button class="action-btn action-btn--approve" *ngIf="r.requestStatus === 'PENDING'"
+                            (click)="reviewRequest(r.idOrganizerRequest, true)" title="Одобрить">
+                      <ng-container *ngTemplateOutlet="iconApprove"></ng-container>
+                    </button>
+                    <button class="action-btn action-btn--reject" *ngIf="r.requestStatus === 'PENDING'"
+                            (click)="reviewRequest(r.idOrganizerRequest, false)" title="Отклонить">
+                      <ng-container *ngTemplateOutlet="iconReject"></ng-container>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'users'" class="tab-content">
+        <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+          <div class="d-flex align-items-center gap-2 bg-white border rounded-3 px-3 py-2 flex-grow-1"
+               style="border-color:#e8e5ff!important;max-width:360px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:#9994b4;flex-shrink:0;">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <input type="text" class="border-0 outline-0 bg-transparent w-100"
+                   style="font-size:.88rem;color:#1a1635;outline:none;"
+                   placeholder="Поиск по имени или email..."
+                   [(ngModel)]="userSearchQuery" (input)="filterUsers()">
+          </div>
+        </div>
+        <div class="card border-0" *ngIf="!loading; else loadingTpl">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" *ngIf="filteredUsers.length; else emptyTpl">
+              <thead style="background:#f8f7ff;">
+              <tr>
+                <th class="table-th">ID</th>
+                <th class="table-th">Имя Фамилия</th>
+                <th class="table-th">Email</th>
+                <th class="table-th">Роль</th>
+                <th class="table-th">Статус</th>
+                <th class="table-th">Дата рождения</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let u of filteredUsers" [class.row--current-user]="currentUserId === u.idUser">
+                <td class="td-id">#{{ u.idUser }}</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div
+                      class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0 text-white"
+                      style="width:30px;height:30px;background:#9c89ff;font-size:.8rem;">{{ u.fio[0] }}
+                    </div>
+                    {{ u.fio }}
+                  </div>
+                </td>
+                <td style="color:#4a4566;font-size:.82rem;">{{ u.email }}</td>
+                <td>
+                  <ng-container *ngIf="currentUserId !== u.idUser; else currentUserRole">
+                    <span class="role-badge clickable" *ngIf="activeRoleSelectUserId !== u.idUser"
+                          (click)="openRoleSelect(u.idUser)">{{ getRoleDisplayName(u.roleName) }}</span>
+                    <select class="form-select form-select-sm role-select"
+                            *ngIf="activeRoleSelectUserId === u.idUser"
+                            [(ngModel)]="u.roleName"
+                            (change)="onRoleChange(u.idUser, u.roleName)"
+                            (blur)="closeRoleSelect()"
+                            autofocus>
+                      <option *ngFor="let r of availableRoles" [value]="r.name">{{ getRoleDisplayName(r.name) }}
+                      </option>
+                    </select>
+                  </ng-container>
+                  <ng-template #currentUserRole>
+                    <span class="role-badge">{{ getRoleDisplayName(u.roleName) }}</span>
+                  </ng-template>
+                </td>
+                <td>
+                  <ng-container *ngIf="currentUserId !== u.idUser; else currentUserStatus">
+                    <span class="status-badge clickable" *ngIf="activeStatusSelectUserId !== u.idUser"
+                          (click)="openStatusSelect(u.idUser)">{{ userStatusLabels[u.userStatus] }}</span>
+                    <select class="form-select form-select-sm status-select"
+                            *ngIf="activeStatusSelectUserId === u.idUser"
+                            [(ngModel)]="u.userStatus"
+                            (change)="onStatusChange(u.idUser, u.userStatus)"
+                            (blur)="closeStatusSelect()"
+                            autofocus>
+                      <option *ngFor="let s of userStatuses" [value]="s">{{ userStatusLabels[s] }}</option>
+                    </select>
+                  </ng-container>
+                  <ng-template #currentUserStatus>
+                    <span class="status-badge">{{ userStatusLabels[u.userStatus] }}</span>
+                  </ng-template>
+                </td>
+                <td>{{ u.birthDate | date:'dd.MM.yyyy' }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'catalog'" class="tab-content">
+        <div class="d-flex flex-wrap gap-1 bg-white rounded-3 p-1 border mb-3" style="border-color:#e8e5ff!important;">
+          <button *ngFor="let t of catalogTabs"
+                  class="btn rounded-3 fw-bold border-0"
+                  style="font-size:.82rem;"
+                  [class.active-filter]="activeCatalogTab === t.key"
+                  (click)="switchCatalogTab(t.key)">{{ t.label }}
+          </button>
+        </div>
+
+        <div class="card border overflow-hidden" style="border-color:#e8e5ff!important;min-height:400px;"
+             [class.catalog-form-open]="catalogSideOpen">
+          <div class="d-flex flex-grow-1">
+            <div class="flex-grow-1 overflow-auto d-flex flex-column">
+              <div class="d-flex align-items-center justify-content-end px-3 py-2 border-bottom"
+                   style="background:#f8f7ff;border-color:#e8e5ff!important;">
+                <button class="btn fw-bold d-flex align-items-center gap-2 rounded-3 border-0 text-white"
+                        style="background:#9c89ff;font-size:.84rem;padding:8px 16px;"
+                        (click)="openCatalogForm(null)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                  </svg>
+                  Добавить
+                </button>
+              </div>
+              <div *ngIf="!loading; else loadingTpl">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0" *ngIf="currentCatalogItems.length; else emptyTpl">
+                    <thead style="background:#f8f7ff;">
+                    <tr>
+                      <th class="table-th">ID</th>
+                      <th class="table-th" *ngIf="activeCatalogTab === 'categories'">Цвет</th>
+                      <th class="table-th">Название</th>
+                      <th class="table-th">Описание</th>
+                      <th class="table-th">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let item of currentCatalogItems" [class.row--selected]="editingItem?.id === item.id">
+                      <td class="td-id">#{{ item.id }}</td>
+                      <td *ngIf="activeCatalogTab === 'categories'">
+                        <span class="d-inline-block rounded-2"
+                              style="width:18px;height:18px;border:2px solid rgba(0,0,0,.08);"
+                              [style.background]="item.colorCode || '#e0e0e0'"></span>
+                      </td>
+                      <td class="fw-semibold">{{ item.name }}</td>
+                      <td style="color:#4a4566;font-size:.82rem;">{{ item.description || '—' }}</td>
+                      <td>
+                        <div class="d-flex gap-1 align-items-center">
+                          <button class="action-btn action-btn--view" (click)="openCatalogForm(item)"
+                                  title="Редактировать">
+                            <ng-container *ngTemplateOutlet="iconEdit"></ng-container>
+                          </button>
+                          <button class="action-btn action-btn--delete" (click)="deleteCatalogItem(item.id)"
+                                  title="Удалить">
+                            <ng-container *ngTemplateOutlet="iconDelete"></ng-container>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="catalog-side-form border-start d-flex flex-column" [class.open]="catalogSideOpen"
+                 style="border-color:#e8e5ff!important;">
+              <div class="d-flex align-items-center justify-content-between px-3 py-3 border-bottom"
+                   style="background:#f8f7ff;border-color:#e8e5ff!important;">
+                <span class="fw-bold"
+                      style="font-size:.95rem;color:#1a1635;">{{ editingItem ? 'Редактировать запись' : 'Новая запись' }}</span>
+                <button class="btn btn-sm border-0 d-flex align-items-center" style="color:#9994b4;"
+                        (click)="closeCatalogForm()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="flex-grow-1 overflow-auto p-3 d-flex flex-column gap-3" [formGroup]="catalogForm">
+                <div>
+                  <label class="form-label fw-bold text-uppercase"
+                         style="font-size:.8rem;color:#4a4566;letter-spacing:.04em;">
+                    Название <span style="color:#ef4444;">*</span>
+                  </label>
+                  <input formControlName="name" type="text" class="form-control rounded-3"
+                         style="background:#f8f7ff;border-color:#e8e5ff;font-size:.87rem;"
+                         placeholder="Введите название...">
+                </div>
+                <div *ngIf="activeCatalogTab !== 'userStatuses'">
+                  <label class="form-label fw-bold text-uppercase"
+                         style="font-size:.8rem;color:#4a4566;letter-spacing:.04em;">Описание</label>
+                  <textarea formControlName="description" class="form-control rounded-3" rows="3"
+                            style="background:#f8f7ff;border-color:#e8e5ff;font-size:.87rem;"
+                            placeholder="Введите описание..."></textarea>
+                </div>
+                <div *ngIf="activeCatalogTab === 'categories'">
+                  <label class="form-label fw-bold text-uppercase"
+                         style="font-size:.8rem;color:#4a4566;letter-spacing:.04em;">Цвет категории</label>
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <input formControlName="colorCode" type="color" class="rounded-3"
+                           style="width:42px;height:38px;padding:2px;border:1px solid #e8e5ff;cursor:pointer;background:white;">
+                    <span
+                      style="font-size:.82rem;color:#4a4566;font-weight:600;font-family:monospace;">{{ catalogFormValue.colorCode }}</span>
+                    <span class="rounded-2"
+                          style="width:24px;height:24px;border:2px solid rgba(0,0,0,.1);display:inline-block;"
+                          [style.background]="catalogFormValue.colorCode"></span>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button *ngFor="let c of colorPresets" type="button"
+                            class="rounded-2 border-0 color-preset"
+                            style="width:26px;height:26px;cursor:pointer;transition:transform .15s;"
+                            [style.background]="c"
+                            [class.selected]="catalogFormValue.colorCode === c"
+                            (click)="setColor(c)"></button>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-end gap-2 px-3 py-3 border-top"
+                   style="background:#f8f7ff;border-color:#e8e5ff!important;">
+                <button class="btn rounded-3 fw-bold border-0"
+                        style="background:#f0eeff;color:#7c6af9;font-size:.85rem;"
+                        (click)="closeCatalogForm()">Отмена
+                </button>
+                <button class="btn rounded-3 fw-bold border-0 d-flex align-items-center gap-2 text-white"
+                        style="background:#9c89ff;font-size:.85rem;" (click)="saveCatalogItem()">
+                  <ng-container *ngTemplateOutlet="iconApprove"></ng-container>
+                  {{ editingItem ? 'Сохранить' : 'Сохранить' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <ng-template #loadingTpl>
+    <div class="d-flex flex-column align-items-center justify-content-center gap-3 p-5"
+         style="color:#9994b4;font-size:.88rem;font-weight:600;">
+      <div class="loading-spinner"></div>
+      <span>Загрузка...</span>
+    </div>
+  </ng-template>
+
+  <ng-template #emptyTpl>
+    <div class="d-flex flex-column align-items-center justify-content-center gap-2 py-5 text-center"
+         style="color:#9994b4;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" opacity="0.3">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <p class="mb-0 fw-semibold" style="font-size:.9rem;">Ничего не найдено</p>
+    </div>
+  </ng-template>
+
+  <div class="modal-overlay d-flex align-items-center justify-content-center" *ngIf="confirmModal.visible"
+       (click)="confirmModal.visible = false">
+    <div class="bg-white rounded-4 p-4 shadow-lg" style="max-width:420px;width:90%;animation:slideUp .25s ease;"
+         (click)="$event.stopPropagation()">
+      <h3 class="fw-bold mb-2" style="font-size:1.1rem;color:#1a1635;">{{ confirmModal.title }}</h3>
+      <p style="color:#4a4566;font-size:.9rem;line-height:1.5;" class="mb-3">{{ confirmModal.message }}</p>
+      <div *ngIf="confirmModal.showComment" class="mb-3">
+        <textarea [(ngModel)]="confirmModal.comment" class="form-control rounded-3"
+                  style="border-color:#e8e5ff;font-size:.87rem;"
+                  placeholder="Комментарий (необязательно)..." rows="3"></textarea>
+      </div>
+      <div class="d-flex gap-2 justify-content-end">
+        <button class="btn rounded-3 fw-bold border-0" style="background:#f0eeff;color:#7c6af9;"
+                (click)="confirmModal.visible = false">Отмена
+        </button>
+        <button class="btn rounded-3 fw-bold border-0 text-white"
+                [style.background]="confirmModal.type === 'approve' ? '#22c55e' : '#ef4444'"
+                (click)="confirmModal.onConfirm()">{{ confirmModal.confirmLabel }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay d-flex align-items-center justify-content-center" *ngIf="viewModal.visible"
+       (click)="closeViewModal()">
+    <div class="bg-white rounded-4 p-4 shadow-lg" style="max-width:600px;width:90%;animation:slideUp .25s ease;"
+         (click)="$event.stopPropagation()">
+      <h3 class="fw-bold mb-3" style="font-size:1.1rem;color:#1a1635;">{{ viewModal.title }}</h3>
+      <div class="overflow-auto mb-4" style="max-height:60vh;">
+        <pre class="rounded-3 p-3 mb-0"
+             style="white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:.9rem;line-height:1.5;background:#f8f7ff;color:#1a1635;">{{ viewModal.text }}</pre>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button class="btn rounded-3 fw-bold border-0" style="background:#f0eeff;color:#7c6af9;"
+                (click)="closeViewModal()">Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay d-flex align-items-center justify-content-center" *ngIf="compareModal.visible"
+       (click)="closeCompareModal()">
+    <div class="bg-white rounded-4 overflow-hidden shadow-lg"
+         style="max-width:900px;width:95%;animation:slideUp .25s ease;"
+         (click)="$event.stopPropagation()">
+      <div class="d-flex align-items-center justify-content-between px-4 py-3 border-bottom"
+           style="background:#f8f7ff;border-color:#e8e5ff!important;">
+        <h3 class="fw-bold mb-0" style="font-size:1.05rem;color:#1a1635;">Рассмотрение изменений</h3>
+        <button class="btn btn-sm border-0 d-flex align-items-center" style="color:#9994b4;"
+                (click)="closeCompareModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div *ngIf="compareModal.loading" class="d-flex align-items-center justify-content-center p-5"
+           style="color:#4a4566;">Загрузка...
+      </div>
+
+      <div *ngIf="!compareModal.loading && compareModal.fields.length">
+        <div class="px-4 pt-3 pb-2">
+          <h4 class="fw-bold mb-1" style="color:#1a1635;">{{ compareModal.eventName }}</h4>
+          <p class="mb-0" style="font-size:.85rem;color:#9994b4;">Выберите поля, которые хотите применить</p>
+        </div>
+
+        <div class="d-flex px-4 py-2 border-bottom"
+             style="background:#f8f7ff;border-color:#e8e5ff!important;font-size:.8rem;font-weight:700;color:#4a4566;">
+          <div style="width:32px;flex-shrink:0;"></div>
+          <div style="width:140px;flex-shrink:0;"></div>
+          <div class="flex-grow-1 border-end pe-2" style="border-color:#e8e5ff!important;">Текущее значение</div>
+          <div class="flex-grow-1 ps-2">Предложенное изменение</div>
+        </div>
+
+        <div class="overflow-auto" style="max-height:50vh;">
+          <div class="d-flex align-items-center px-4 py-2 border-bottom compare-row"
+               style="border-color:rgba(232,229,255,.5)!important;"
+               *ngFor="let f of compareModal.fields">
+            <div style="width:32px;flex-shrink:0;">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="f.selected" [id]="'chk_'+f.key">
+            </div>
+            <div style="width:140px;flex-shrink:0;">
+              <label class="fw-semibold mb-0" style="font-size:.85rem;color:#1a1635;"
+                     [for]="'chk_'+f.key">{{ f.label }}</label>
+            </div>
+            <div class="flex-grow-1 border-end pe-2"
+                 style="border-color:#e8e5ff!important;font-size:.85rem;color:#4a4566;word-break:break-word;">{{ f.currentValue }}
+            </div>
+            <div class="flex-grow-1 ps-2"
+                 style="font-size:.85rem;color:#5d4acb;font-weight:500;word-break:break-word;">{{ f.newValue }}
+            </div>
+          </div>
+        </div>
+
+        <div class="px-4 py-3 border-top" style="background:#f8f7ff;border-color:#e8e5ff!important;">
+          <label class="form-label fw-bold text-uppercase" style="font-size:.8rem;color:#4a4566;letter-spacing:.04em;">Комментарий
+            (для отклонения)</label>
+          <textarea [(ngModel)]="compareModal.comment" class="form-control rounded-3" rows="2"
+                    style="border-color:#e8e5ff;font-size:.87rem;background:#f8f7ff;"
+                    placeholder="Причина отклонения..."></textarea>
+        </div>
+
+        <div class="d-flex gap-3 justify-content-end px-4 py-3 border-top" style="border-color:#e8e5ff!important;">
+          <button class="btn rounded-3 fw-bold border-0 text-white" style="background:#22c55e;"
+                  (click)="approveChanges()">Применить выбранные
+          </button>
+          <button class="btn rounded-3 fw-bold border-0 text-white" style="background:#ef4444;"
+                  (click)="rejectChanges()">Отклонить все изменения
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!compareModal.loading && compareModal.fields.length === 0"
+           class="d-flex flex-column align-items-center justify-content-center py-5 gap-2" style="color:#9994b4;">
+        <p class="mb-0 fw-semibold">Нет изменений для рассмотрения</p>
+      </div>
+    </div>
+  </div>
+
+</div>

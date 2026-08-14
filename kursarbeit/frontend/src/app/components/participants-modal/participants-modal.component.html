@@ -1,0 +1,76 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div>
+        <h3>Участники мероприятия</h3>
+        <h4>{{ eventName }}</h4>
+      </div>
+      <button class="close-btn" (click)="close()" aria-label="Закрыть">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (isLoading) {
+        <div class="text-center py-5">
+          <div class="spinner-purple"></div>
+          <p class="mt-2 text-muted">Загрузка участников...</p>
+        </div>
+      } @else if (participants.length === 0) {
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-people mb-2" style="font-size: 2rem;"></i>
+          <p>Нет зарегистрированных участников</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+              <th>Имя Фамилия</th>
+              <th>Статус</th>
+              <th class="text-end">Дата регистрации</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (p of participants; track p.userId) {
+                <tr>
+                  <td class="fw-medium">{{ p.userFio }}</td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      @if (editingUserId !== p.userId) {
+                        <div [class]="getStatusClass(p.participationStatus)" (click)="startEdit(p)">
+                          {{ getStatusName(p.participationStatus) }}
+                        </div>
+                      } @else {
+                        <select class="form-select form-select-sm status-select-custom"
+                                [formControl]="editingStatusControl"
+                                (change)="saveStatus(p)"
+                                (blur)="cancelEdit()">
+                          @for (status of statusOptions; track status.id) {
+                            <option [value]="status.id">{{ status.name }}</option>
+                          }
+                        </select>
+                      }
+
+                      @if (updatingUserId === p.userId) {
+                        <div class="spinner-purple spinner-purple--small"></div>
+                      }
+                    </div>
+                  </td>
+                  <td class="text-end text-muted small">
+                    {{ p.registrationDate | date:'dd.MM.yyyy HH:mm' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-light px-4" (click)="close()">Закрыть</button>
+    </div>
+  </div>
+</div>

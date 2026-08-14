@@ -1,0 +1,135 @@
+$purple-main: #9c89ff;
+$purple-dark: #7c6af9;
+$purple-light: #f3f0ff;
+
+.my-events-page {
+  background-color: #f8f7ff;
+  min-height: 100vh;
+}
+
+.text-primary-custom {
+  color: $purple-main;
+}
+
+.btn-primary-custom {
+  background: $purple-main;
+  color: white;
+
+  &:hover {
+    background: $purple-dark;
+    color: white;
+  }
+}
+
+.filters-scroll-container {
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.filter-btn {
+  white-space: nowrap;
+  padding: 8px 18px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $purple-main;
+    color: $purple-main;
+  }
+
+  &.active {
+    background: $purple-main;
+    color: white;
+    border-color: $purple-main;
+    box-shadow: 0 4px 12px rgba($purple-main, 0.25);
+
+    .count-badge {
+      background: rgba(white, 0.2);
+      color: white;
+    }
+  }
+
+  .count-badge {
+    font-size: 0.75rem;
+    background: #f0f0f0;
+    color: #888;
+    padding: 1px 7px;
+    border-radius: 10px;
+  }
+}
+
+.event-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+  }
+}
+
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-registered {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-waitlist {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.status-attended {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-cancelled {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.status-rejected {
+  background: #fce4ec;
+  color: #ad1457;
+}
+
+.icon-circle {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 576px) {
+  .event-card .row {
+    flex-direction: column;
+    text-align: center;
+  }
+  .event-card .col-auto {
+    width: 100%;
+
+    .d-flex {
+      justify-content: center;
+    }
+  }
+}

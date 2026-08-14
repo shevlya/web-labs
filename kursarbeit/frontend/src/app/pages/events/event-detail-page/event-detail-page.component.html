@@ -1,0 +1,203 @@
+<div class="event-detail-page py-4 py-md-5">
+  <div class="container">
+
+    @if (isLoading) {
+      <div class="detail-skeleton placeholder-glow">
+        <div class="skeleton-hero placeholder mb-4"></div>
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="placeholder col-7 mb-2" style="height: 32px"></div>
+            <div class="placeholder col-4 d-block mb-4"></div>
+            <div class="placeholder col-12 mb-1"></div>
+            <div class="placeholder col-10"></div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (!isLoading && event) {
+      <a routerLink="/events" class="back-link d-inline-flex align-items-center mb-4 text-decoration-none">
+        <i class="bi bi-arrow-left me-2"></i>
+        Все мероприятия
+      </a>
+
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="detail-hero position-relative rounded-4 overflow-hidden mb-4 shadow-sm">
+            @if (event.imageUrl) {
+              <img [src]="event.imageUrl" [alt]="event.eventName" class="w-100 h-100 object-fit-cover">
+            } @else {
+              <div class="detail-hero__placeholder d-flex align-items-center justify-content-center h-100"
+                   [style.background]="colorFromCode(event.categoryColor)">
+                <i class="bi bi-image text-white opacity-50" style="font-size: 4rem;"></i>
+              </div>
+            }
+            <div class="detail-hero__badges position-absolute bottom-0 start-0 p-3 d-flex gap-2">
+              <span class="badge rounded-pill shadow-sm py-2 px-3"
+                    [style.background]="colorFromCode(event.categoryColor)">
+                {{ event.eventCategoryName }}
+              </span>
+              @if (event.placeType === 'ONLINE') {
+                <span class="badge bg-success rounded-pill shadow-sm py-2 px-3">
+                  <i class="bi bi-camera-video me-1"></i> Онлайн
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h1 class="fw-bold mb-1">{{ event.eventName }}</h1>
+            <p class="app-text-purple fw-medium mb-4">{{ event.eventFormat }}</p>
+
+            @if (event.eventDescription) {
+              <div class="detail-description">
+                <h5 class="fw-bold mb-3">О мероприятии</h5>
+                <p class="text-muted lh-lg mb-0">{{ event.eventDescription }}</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <aside class="col-lg-4">
+
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <div class="h3 fw-bolder app-text-purple mb-3">{{ formatPrice(event.price) }}</div>
+
+            @if (event.maxParticipants) {
+              <div class="seats-info mb-4">
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar rounded-pill"
+                       [style.width.%]="(participantsCount / event.maxParticipants) * 100"
+                       [style.background-color]="colorFromCode(event.categoryColor)">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between small text-muted">
+                  <span>{{ participantsCount }} / {{ event.maxParticipants }} участников</span>
+                  @if (!isRegistrationOpen && !isRegistered) {
+                    <span class="text-danger fw-bold">Мест нет</span>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (isLoggedIn) {
+              <button class="btn btn-lg w-100 rounded-3 fw-bold py-3 app-btn-purple"
+                      [class.btn-outline-danger]="isRegistered"
+                      [class.app-btn-purple]="!isRegistered"
+                      [class.btn-warning]="!isRegistered && !isRegistrationOpen"
+                      (click)="register()"
+                      [disabled]="registrationLoading">
+                @if (registrationLoading) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                } @else {
+                  <i class="bi me-2" [class]="isRegistered ? 'bi-x-circle' : 'bi-check-circle'"></i>
+                  {{ isRegistered ? 'Отменить запись' : (isRegistrationOpen ? 'Записаться' : 'В лист ожидания') }}
+                }
+              </button>
+            } @else {
+              <button class="btn btn-outline-purple btn-lg w-100 rounded-3 fw-bold py-3" (click)="register()">
+                <i class="bi bi-person-lock me-2"></i> Войти для записи
+              </button>
+            }
+
+            @if (registrationSuccess) {
+              <div class="alert alert-success mt-3 py-2 small text-center border-0 rounded-3">
+                <i class="bi bi-check-lg me-1"></i> {{ registrationSuccess }}
+              </div>
+            }
+            @if (registrationError) {
+              <div class="alert alert-danger mt-3 py-2 small text-center border-0 rounded-3">
+                <i class="bi bi-exclamation-triangle me-1"></i> {{ registrationError }}
+              </div>
+            }
+          </div>
+
+          <div class="card border-0 shadow-sm rounded-4 p-4 d-flex flex-column gap-4">
+            <div class="d-flex align-items-start gap-3">
+              <div class="icon-box rounded-3 bg-purple-light p-2 text-purple-main">
+                <i class="bi bi-calendar3 fs-5"></i>
+              </div>
+              <div>
+                <div class="small text-muted fw-medium">Дата</div>
+                <div class="fw-bold">{{ formatDate(event.eventDate) }}</div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-start gap-3">
+              <div class="icon-box rounded-3 bg-purple-light p-2 text-purple-main">
+                <i class="bi bi-clock fs-5"></i>
+              </div>
+              <div>
+                <div class="small text-muted fw-medium">Время</div>
+                <div class="fw-bold">{{ formatTime(event.startTime) }} — {{ formatTime(event.endTime) }}</div>
+              </div>
+            </div>
+
+            @if (event.placeType !== 'ONLINE') {
+              <div class="d-flex align-items-start gap-3">
+                <div class="icon-box rounded-3 bg-purple-light p-2 text-purple-main">
+                  <i class="bi bi-geo-alt fs-5"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="small text-muted fw-medium">Адрес</div>
+                  <div class="fw-bold">{{ event.placeName }}</div>
+                  @if (physicalPlace?.address) {
+                    <div class="small text-muted mt-1">{{ physicalPlace?.address }}</div>
+                  }
+                  @if (physicalPlace?.disabilityAccessible) {
+                    <div
+                      class="badge bg-success-subtle text-success mt-2 d-inline-flex align-items-center fw-medium border border-success-subtle">
+                      <i class="bi bi-accessibility me-1"></i> Есть доступная среда
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else if (onlinePlace) {
+              <div class="d-flex align-items-start gap-3">
+                <div class="icon-box rounded-3 bg-purple-light p-2 text-purple-main">
+                  <i class="bi bi-globe fs-5"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="small text-muted fw-medium">Формат</div>
+                  <div class="fw-bold">Онлайн ({{ onlinePlace.placeName }})</div>
+
+                  @if (isRegistered) {
+                    <div class="online-details mt-3 p-3 bg-light rounded-3 border border-dashed">
+                      <a [href]="onlinePlace.meetingUrl" target="_blank"
+                         class="btn btn-sm app-btn-purple w-100 mb-2 py-2 fw-bold">
+                        <i class="bi bi-box-arrow-up-right me-1"></i> Перейти к конференции
+                      </a>
+                      @if (onlinePlace.specialNotes) {
+                        <div class="small text-muted mt-2">
+                          <i class="bi bi-info-circle me-1"></i>{{ onlinePlace.specialNotes }}
+                        </div>
+                      }
+                      @if (onlinePlace.recording) {
+                        <div class="app-text-purple fw-bold mt-1 small">
+                          <i class="bi bi-record-circle me-1"></i> Запись будет доступна
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="small text-muted mt-2 fst-italic">Ссылка доступна после регистрации</div>
+                  }
+                </div>
+              </div>
+            }
+
+            <div class="d-flex align-items-start gap-3">
+              <div class="icon-box rounded-3 bg-purple-light p-2 text-purple-main">
+                <i class="bi bi-person-badge fs-5"></i>
+              </div>
+              <div>
+                <div class="small text-muted fw-medium">Организатор</div>
+                <div class="fw-bold">{{ event.organizerFio }}</div>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    }
+  </div>
+</div>

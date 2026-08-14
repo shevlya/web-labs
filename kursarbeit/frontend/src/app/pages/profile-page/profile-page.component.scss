@@ -1,0 +1,75 @@
+$purple-main: #9c89ff;
+$purple-dark: #7c6af9;
+$purple-light: #f3f0ff;
+
+.bg-purple-main { background-color: $purple-main; }
+.bg-purple-lighter { background-color: $purple-light; }
+.text-purple-main { color: $purple-main !important; }
+.text-purple-dark { color: $purple-dark; }
+
+.border-dashed {
+  border: 2px dashed rgba($purple-main, 0.4) !important;
+}
+
+.btn-purple-main {
+  background-color: $purple-main;
+  color: white;
+  transition: all 0.2s ease;
+  &:hover:not(:disabled) {
+    background-color: $purple-dark;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($purple-main, 0.3) !important;
+  }
+}
+
+.btn-outline-purple {
+  border: 2px solid $purple-main;
+  color: $purple-main;
+  transition: all 0.2s ease;
+  &:hover {
+    background-color: $purple-main;
+    color: white;
+  }
+}
+
+.form-control:focus {
+  border-color: $purple-main;
+  box-shadow: 0 0 0 0.25rem rgba(156, 137, 255, 0.25);
+}
+.form-check-input:checked {
+  background-color: $purple-main;
+  border-color: $purple-main;
+}
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(156, 137, 255, 0.25);
+}
+
+.avatar-wrapper {
+  cursor: pointer;
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  &:hover .avatar-overlay { opacity: 1; }
+}
+
+.avatar-option {
+  border-color: transparent !important;
+  transition: all 0.2s ease;
+  &:hover {
+    transform: scale(1.05);
+    border-color: $purple-light !important;
+  }
+  &.active-avatar {
+    border-color: $purple-main !important;
+    border-width: 3px !important;
+    transform: scale(1.05);
+  }
+}
+
+.transition-all { transition: all 0.2s ease; }
+i.rotated { transform: rotate(180deg); }

@@ -1,0 +1,22 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Backend
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+src/main/resources/application.properties
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Собранный фронтенд внутри бэкенда (генерируется автоматически)
+backend/src/main/resources/static/
+
+# Environment files (если есть секреты)
+*.env

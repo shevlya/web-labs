@@ -1,0 +1,123 @@
+<div class="info-center-page bg-purple-lighter min-vh-100 pb-5">
+
+  <section class="info-hero bg-purple-gradient text-white text-center py-5 mb-5 shadow-sm">
+    <div class="container py-3">
+      <div class="info-hero-icon mx-auto mb-3 d-flex align-items-center justify-content-center">
+        <i class="bi bi-info-circle fs-1"></i>
+      </div>
+      <h1 class="display-5 fw-bold mb-2">Справочный уголок</h1>
+      <p class="lead opacity-75 mx-auto" style="max-width: 520px;">
+        Ответы на частые вопросы и форма обратной связи - мы всегда готовы помочь
+      </p>
+    </div>
+  </section>
+
+  <div class="container" style="max-width: 860px;">
+
+    <section class="mb-5">
+      <h2 class="h4 fw-bold text-dark mb-4">Часто задаваемые вопросы</h2>
+      <div class="accordion accordion-flush rounded-4 overflow-hidden shadow-sm" id="faqAccordion">
+        @for (item of faqItems; track $index) {
+          <div class="accordion-item border-0">
+            <h3 class="accordion-header">
+              <button class="accordion-button fw-bold py-3 px-4 collapsed"
+                      type="button"
+                      [class.collapsed]="openFaqIndex !== $index"
+                      (click)="toggleFaq($index)">
+                {{ item.question }}
+              </button>
+            </h3>
+            <div class="accordion-collapse collapse" [class.show]="openFaqIndex === $index">
+              <div class="accordion-body py-3 px-4 text-muted bg-white">
+                {{ item.answer }}
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section>
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+
+        <div class="d-flex align-items-center gap-3 mb-4 pb-4 border-bottom">
+          <div
+            class="contact-icon bg-purple-gradient text-white rounded-4 d-flex align-items-center justify-content-center shadow-sm">
+            <i class="bi bi-envelope-fill fs-4"></i>
+          </div>
+          <div>
+            <h2 class="h5 fw-bold mb-1">Напишите нам</h2>
+            <p class="text-muted small mb-0">Не нашли ответа в FAQ? Ответим в течение 1-2 рабочих дней</p>
+          </div>
+        </div>
+
+        @if (sendSuccess) {
+          <div class="alert alert-success d-flex align-items-center justify-content-between rounded-4 py-3"
+               role="alert">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-check-circle-fill me-3 fs-4"></i>
+              <div>
+                <strong class="d-block">Сообщение отправлено!</strong>
+                <span class="small">Мы получили ваш вопрос и ответим на указанный email.</span>
+              </div>
+            </div>
+            <button type="button" class="btn-close" (click)="resetSuccess()"></button>
+          </div>
+        } @else {
+          <form [formGroup]="contactForm" (ngSubmit)="submitForm()" class="needs-validation">
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold small">Ваше имя <span class="text-danger">*</span></label>
+                <input type="text" formControlName="name" class="form-control rounded-3"
+                       [class.is-invalid]="fieldError('name')" placeholder="Иван Иванов">
+                <div class="invalid-feedback">Поле обязательно (до 100 симв.)</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-bold small">Email <span class="text-danger">*</span></label>
+                <input type="email" formControlName="email" class="form-control rounded-3"
+                       [class.is-invalid]="fieldError('email')" placeholder="example@mail.ru">
+                <div class="invalid-feedback">Введите корректный email</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small">Тема <span class="text-danger">*</span></label>
+              <input type="text" formControlName="subject" class="form-control rounded-3"
+                     [class.is-invalid]="fieldError('subject')" placeholder="Суть вопроса">
+              <div class="invalid-feedback">Обязательное поле (до 200 симв.)</div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label fw-bold small mb-0">Сообщение <span class="text-danger">*</span></label>
+                <span class="text-muted small">{{ messageLength }} / 2000</span>
+              </div>
+              <textarea formControlName="message" class="form-control rounded-3"
+                        [class.is-invalid]="fieldError('message')" rows="5"
+                        placeholder="Опишите проблему..."></textarea>
+              <div class="invalid-feedback">Минимум 10 символов</div>
+            </div>
+
+            @if (sendError) {
+              <div class="alert alert-danger rounded-3 py-2 small mb-3">{{ sendError }}</div>
+            }
+
+            <div class="text-end">
+              <button type="submit" class="btn btn-purple-gradient px-5 py-2 fw-bold rounded-3 shadow-sm"
+                      [disabled]="isSending">
+                @if (isSending) {
+                  <span class="spinner-border spinner-border-sm me-2"></span> Отправляем...
+                } @else {
+                  <i class="bi bi-send-fill me-2"></i> Отправить
+                }
+              </button>
+            </div>
+          </form>
+        }
+      </div>
+    </section>
+
+  </div>
+</div>

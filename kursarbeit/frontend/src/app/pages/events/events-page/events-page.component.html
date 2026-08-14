@@ -1,0 +1,168 @@
+<div class="events-page py-4 py-md-5">
+  <div class="container">
+    <div class="page-header mb-4">
+      <h1 class="fw-bold h2 mb-1">Мероприятия</h1>
+      <p class="text-muted mb-0">Найдено: {{ filteredEvents.length }}</p>
+    </div>
+
+    <div class="search-bar input-group mb-4 shadow-sm rounded-4 overflow-hidden">
+      <input type="text"
+             placeholder="Поиск по названию..."
+             [(ngModel)]="searchKeyword"
+             (keyup.enter)="onSearch()"
+             class="form-control border-0 py-3 px-4">
+      <button class="btn app-btn-purple px-4" (click)="onSearch()">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+
+    <div class="row g-4 position-relative">
+      <aside class="col-lg-3 sticky-lg-top h-100" style="top: 2rem; z-index: 10;">
+        <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+          <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-3">Фильтры</h5>
+
+            <div class="mb-3">
+              <label class="small fw-bold text-muted mb-2">Категория</label>
+              <select formControlName="categoryId" class="form-select border-2">
+                <option [ngValue]="null">Все категории</option>
+                @for (cat of categories; track cat.idEventCategory) {
+                  <option [ngValue]="cat.idEventCategory">{{ cat.eventCategoryName }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="small fw-bold text-muted mb-2">Формат</label>
+              <select formControlName="formatId" class="form-select border-2">
+                <option [ngValue]="null">Все форматы</option>
+                @for (fmt of formats; track fmt.id) {
+                  <option [ngValue]="fmt.id">{{ fmt.name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="small fw-bold text-muted mb-2">Дата с</label>
+              <input type="date" formControlName="dateFrom" class="form-control border-2">
+            </div>
+
+            <div class="mb-4">
+              <label class="small fw-bold text-muted mb-2">Дата по</label>
+              <input type="date" formControlName="dateTo" class="form-control border-2">
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn app-btn-purple fw-bold py-2 rounded-3">Применить</button>
+              <button type="button" class="btn btn-light fw-bold py-2 rounded-3" (click)="resetFilters()">
+                Сбросить
+              </button>
+            </div>
+          </div>
+        </form>
+      </aside>
+
+      <div class="col-lg-9">
+        @if (isLoading) {
+          <div class="row g-4">
+            @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+              <div class="col-md-6 col-xl-4">
+                <div class="event-card--skeleton placeholder-glow rounded-4 overflow-hidden shadow-sm bg-white">
+                  <div class="skeleton-img placeholder w-100" style="height: 160px"></div>
+                  <div class="p-3">
+                    <div class="placeholder col-6 mb-2"></div>
+                    <div class="placeholder col-12 mb-2" style="height: 20px"></div>
+                    <div class="placeholder col-10"></div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (filteredEvents.length > 0) {
+          <div class="row g-4">
+            @for (event of filteredEvents; track event.idEvent) {
+              <div class="col-md-6 col-xl-4">
+                <a [routerLink]="['/events', event.idEvent]"
+                   class="event-card card h-100 border-0 shadow-sm rounded-4 overflow-hidden text-decoration-none">
+                  <div class="event-card__img position-relative" style="height: 160px">
+                    @if (event.imageUrl) {
+                      <img [src]="event.imageUrl" [alt]="event.eventName" class="w-100 h-100 object-fit-cover">
+                    } @else {
+                      <div class="w-100 h-100 d-flex align-items-center justify-content-center"
+                           [style.background]="colorFromCode(event.categoryColor)">
+                        <i class="bi bi-calendar-event text-white fs-1 opacity-50"></i>
+                      </div>
+                    }
+                    <span class="badge position-absolute bottom-0 start-0 m-3 shadow-sm rounded-pill py-2 px-3"
+                          [style.background]="colorFromCode(event.categoryColor)">
+                      {{ event.eventCategoryName }}
+                    </span>
+                    @if (event.eventFormat === 'ONLINE') {
+                      <span class="badge bg-success position-absolute top-0 end-0 m-3 shadow-sm rounded-pill py-2 px-3">
+                        <i class="bi bi-camera-video me-1"></i> Онлайн
+                      </span>
+                    }
+                  </div>
+
+                  <div class="card-body d-flex flex-column p-3">
+                    <h5 class="card-title fw-bold text-dark mb-2 text-truncate-2">{{ event.eventName }}</h5>
+                    <div class="event-meta mb-3 flex-grow-1">
+                      <div class="small text-muted mb-1 d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar3 text-purple-main"></i>
+                        {{ formatDate(event.eventDate) }}, {{ formatTime(event.startTime) }}
+                      </div>
+                      @if (event.placeName && event.eventFormat !== 'ONLINE') {
+                        <div class="small text-muted d-flex align-items-center gap-2">
+                          <i class="bi bi-geo-alt text-purple-main"></i>
+                          <span class="text-truncate">{{ event.placeName }}</span>
+                        </div>
+                      }
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                      <span class="fw-bold app-text-purple fs-5">{{ formatPrice(event.price) }}</span>
+                      @if (event.maxParticipants) {
+                        <span
+                          class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2">
+                          {{ event.maxParticipants }} мест
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              </div>
+            }
+          </div>
+
+          @if (totalPages > 1) {
+            <nav class="mt-5 d-flex justify-content-center">
+              <ul class="pagination pagination-purple gap-2">
+                <li class="page-item" [class.disabled]="currentPage === 0">
+                  <button class="page-link rounded-3 border-0 shadow-sm" (click)="goToPage(currentPage - 1)">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                </li>
+                @for (p of pages; track p) {
+                  <li class="page-item" [class.active]="p === currentPage">
+                    <button class="page-link rounded-3 border-0 shadow-sm" (click)="goToPage(p)">{{ p + 1 }}</button>
+                  </li>
+                }
+                <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                  <button class="page-link rounded-3 border-0 shadow-sm" (click)="goToPage(currentPage + 1)">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          }
+        } @else {
+          <div class="text-center py-5">
+            <i class="bi bi-search text-muted opacity-25" style="font-size: 5rem;"></i>
+            <h4 class="mt-3 fw-bold text-muted">Мероприятий не найдено</h4>
+            <p class="text-muted">Попробуйте изменить параметры поиска или сбросить фильтры.</p>
+            <button class="btn app-btn-purple rounded-pill px-4 mt-2" (click)="resetFilters()">Сбросить всё</button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
